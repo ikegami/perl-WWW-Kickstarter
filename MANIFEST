@@ -1,0 +1,13 @@
+.gitignore
+Build.PL
+Changes
+lib/WWW/Kickstarter.pm
+LICENSE.txt
+MANIFEST
+MANIFEST.SKIP
+META.json
+META.yml
+README.txt
+t/00_load.t
+t/devel-pod-coverage.t
+t/pod.t
