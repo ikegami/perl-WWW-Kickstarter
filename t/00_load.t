@@ -3,9 +3,22 @@
 use strict;
 use warnings;
 
-use Test::More tests => 1;
+use Test::More tests => 12;
 
-BEGIN { require_ok( 'LWP::Protocol::AnyEvent::http' ); }
+BEGIN {
+   require_ok( 'WWW::Kickstarter'                     );
+   require_ok( 'WWW::Kickstarter::Categories'         );
+   require_ok( 'WWW::Kickstarter::Category'           );
+   require_ok( 'WWW::Kickstarter::Error'              );
+   require_ok( 'WWW::Kickstarter::HttpClient::Lwp'    );
+   require_ok( 'WWW::Kickstarter::Iterator'           );
+   require_ok( 'WWW::Kickstarter::JsonParser::JsonXs' );
+   require_ok( 'WWW::Kickstarter::NotificationPref'   );
+   require_ok( 'WWW::Kickstarter::Object'             );
+   require_ok( 'WWW::Kickstarter::Project'            );
+   require_ok( 'WWW::Kickstarter::User'               );
+   require_ok( 'WWW::Kickstarter::User::Myself'       );
+}
 
 diag( "Testing WWW::Kickstarter $WWW::Kickstarter::VERSION" );
 diag( "Using Perl $]" );

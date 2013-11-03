@@ -2,3 +2,4 @@ Revision history for WWW-Kickstarter
 
 1.0.0   ~~~~-~~-~~
         Initial version
+        Accounts for the backwards-incompatible changes to the API of December 2013.

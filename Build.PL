@@ -15,11 +15,23 @@ my $build = Module::Build->new(
       'Test::More' => 0,
    },
    requires => {
-      'JSON'                 => 0,
-      #'JSON:XS'             => 0,  # Recommended
-      'LWP::Protocol::https' => 0,
-      'LWP::UserAgent'       => 0,
-      'version'              => 0,
+      'autovivification'      => 0,
+      'Carp'                  => 0,
+      'overload'              => 0,
+      'Time::HiRes'           => 0,
+      'URI'                   => 0,
+      'URI::Escape'           => 0,
+      'URI::QueryParam'       => 0,
+      'version'               => 0,
+
+      # Used by replaceable WWW::Kickstarter::HttpClient
+      'HTTP::Headers'         => 0,
+      'HTTP::Request::Common' => 0,
+      'LWP::Protocol::https'  => 0,
+      'LWP::UserAgent'        => 0,
+
+      # Used by replaceable WWW::Kickstarter::JsonParser
+      'JSON:XS'               => 0,
    },
    add_to_cleanup => [ 'WWW-Kickstarter-*' ],
    meta_merge     => {

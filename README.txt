@@ -19,11 +19,23 @@ This module requires these other modules and libraries:
 
     Module::Build    (For installation only)
     Test::More       (For testing only)
-    JSON
-    JSON::XS         (Recommended)
-    LWP::Protocol::https
-    LWP::UserAgent
+    autovivification
+    Carp
+    overload
+    Time::HiRes
+    URI
+    URI::Escape
+    URI::QueryParam
     version
+
+    The default HTTP client requires the following:
+        HTTP::Headers
+        HTTP::Request::Common
+        LWP::Protocol::https
+        LWP::UserAgent
+
+    The default JSON parser requires the following:
+        JSON:XS
 
 
 SUPPORT AND DOCUMENTATION

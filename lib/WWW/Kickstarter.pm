@@ -1,15 +1,499 @@
-
+ 
 package WWW::Kickstarter;
 
 use strict;
 use warnings;
+no autovivification;
 
 use version; our $VERSION = qv('v0.9.0');
 
-use LWP::Protocol::https qw( );
-use LWP::UserAgent       qw( );
 
-# ~~~
+use Time::HiRes                        qw( );
+use URI                                qw( );
+use URI::QueryParam                    qw( uri_escape_utf8 );
+use URI::Escape                        qw( );
+use WWW::Kickstarter::Categories       qw( );
+use WWW::Kickstarter::Category         qw( );
+use WWW::Kickstarter::Error            qw( my_croak );
+use WWW::Kickstarter::Iterator         qw( );
+use WWW::Kickstarter::NotificationPref qw( );
+use WWW::Kickstarter::Project          qw( );
+use WWW::Kickstarter::User             qw( );
+use WWW::Kickstarter::User::Myself     qw( );
+
+
+# ---
+
+
+our $HTTP_CLIENT_CLASS = 'WWW::Kickstarter::HttpClient::Lwp';
+our $JSON_PARSER_CLASS = 'WWW::Kickstarter::JsonParser::JsonXs';
+
+
+# ---
+
+
+sub _load_class {
+   my ($class) = @_;
+
+   # This isn't exactly what Perl accepts as an identifier, but close enough.
+   $class =~ /^\w+(?:::\w+)*\z/
+      or my_croak(400, "Unacceptable class name $class");
+
+   eval("require $class")
+      or die($@);
+
+   return $class;
+}
+
+
+sub _expand_agent {
+   my ($agent) = @_;
+
+   return $agent if defined($agent) && $agent !~ / \z/;
+
+   $agent = 'unspecified_application/0.00 ' if !defined($agent);
+
+   my $version = $VERSION;
+   $version =~ s/^v//;
+   $agent .= "perl-WWW-Kickstarter/$version ";
+
+   return $agent;
+}
+
+
+# ---
+
+
+sub new {
+   my ($class, %opts) = @_;
+
+   my $http_client_class = delete($opts{http_client_class}) || $HTTP_CLIENT_CLASS;
+   my $json_parser_class = delete($opts{json_parser_class}) || $JSON_PARSER_CLASS;
+   my $agent             = delete($opts{agent});
+   my $impolite          = delete($opts{impolite});
+
+   if (my @unrecognized = keys(%opts)) {
+      my_croak(400, "Unrecognized parameters @unrecognized");
+   }
+
+   my $self = bless({}, $class);
+   $self->{http_client } = _load_class($http_client_class)->new( agent => _expand_agent($agent) );
+   $self->{json_parser } = _load_class($json_parser_class)->new();
+   $self->{polite      } = !$impolite;
+   $self->{wait_until  } = 0;
+   $self->{access_token} = undef;
+   $self->{my_id       } = undef;
+
+   return $self;
+}
+
+
+# ---
+
+
+sub _validate_response {
+   my ($self, $response, %opts) = @_;
+
+   my $recognize_404 = delete($opts{recognize_404});
+
+   return 1
+      if (ref($response) || '') ne 'HASH';
+
+   my $ksr_code  = $response->{ksr_code};
+   my $http_code = $response->{http_code};
+   my $messages  = $response->{error_messages};
+
+   my $msg = "Error from Kickstarter";
+   $msg .= ": $ksr_code"                                         if $ksr_code;
+   $msg .= ": HTTP $http_code"                                   if $http_code;
+   $msg .= ": " . join(' // ', @{ $response->{error_messages} }) if $messages && @$messages;
+
+   if ($recognize_404 && $http_code && $http_code eq '404') {
+      my_croak(404, $msg);
+   }
+
+   if ($messages && @$messages) {
+      my_croak(500, $msg);
+   }
+
+   return 1;
+}
+
+
+sub _http_request {
+   my $self = shift;
+
+   my $stime = Time::HiRes::time();
+
+   if ($self->{polite}) {
+      # Throttle requests
+      my $wait_until = $self->{wait_until};
+      while ($stime < $wait_until) {
+         # Sometimes, it sleeps a little less than requested,
+         # resulting in a loop of ever-shorter sleeps.
+         # Sleeping an extra millisecond avoids that waste.
+         Time::HiRes::sleep($wait_until - $stime + 0.001);
+         $stime = Time::HiRes::time();
+      }
+   }
+
+   my ( $status_code, $status_line, $content_type, $content_encoding, $content ) = $self->{http_client}->request(@_);
+
+   my $etime = Time::HiRes::time();
+
+   my $cool_down = $etime - $stime;
+   $cool_down = 4 if $cool_down > 4;
+   $self->{wait_until} = $etime + $cool_down;
+
+   if ($content_type ne 'application/json') {
+      if ($status_code >= 200 && $status_code < 300) {
+         my_croak(500, "Error parsing response: Unexpected content type");
+      } else {
+         my_croak(500, "HTTP error: $status_line");
+      }
+   }
+
+   if ($content_encoding && uc($content_encoding) ne 'UTF-8') {
+      my_croak(500, "Error parsing response: Unexpected content encoding \"$content_encoding\"");
+   }
+
+   my $response = eval { $self->{json_parser}->decode($content) }
+      or my_croak(500, "Error parsing response: Invalid JSON");
+
+   return $response;
+}
+
+
+my %ks_iterator_name_by_class = (
+    'WWW::Kickstarter::Category' => 'categories',
+    'WWW::Kickstarter::Project'  => 'projects',
+    'WWW::Kickstarter::User'     => 'users',
+);
+
+sub _call_api {
+   my_croak(400, "Incorrect usage") if @_ < 4;
+   my ($self, $url, $call_type, $class, %opts) = @_;
+
+   my $recognize_404 = 0;
+   my $cursor_style;
+   if (ref($call_type)) {
+      ($call_type, my %call_opts) = @$call_type;
+      $recognize_404 = delete($call_opts{recognize_404});
+      $cursor_style  = delete($call_opts{cursor_style});
+   }
+
+   my @cursor;
+   if (defined($cursor_style)) {
+      if ($cursor_style eq 'start') {
+         my $start = delete($opts{start});
+         @cursor = ( cursor => $start ) if defined($start) && length($start);
+      }
+      elsif ($cursor_style eq 'page') {
+         my $page = delete($opts{page});
+         @cursor = ( page => $page ) if defined($page) && length($page);
+      }
+      else {
+         die("Invalid cursor style $cursor_style");
+      }
+   }
+
+   if (my @unrecognized = keys(%opts)) {
+      my_croak(400, "Unrecognized parameters @unrecognized");
+   }
+
+   my $access_token = $self->{access_token}
+      or my_croak(400, "Must login first");
+
+   $url = URI->new('https://api.kickstarter.com/v1/' . $url);
+   $url->query_param_append(oauth_token => $access_token);
+
+   $class = 'WWW::Kickstarter::' . $class;
+
+   if ($call_type eq 'single') {
+      my $response = $self->_http_request(GET => $url);
+      $self->_validate_response($response, recognize_404 => $recognize_404);
+
+      return $class->new($self, $response);
+   }
+   elsif ($call_type eq 'list') {
+      my $response = $self->_http_request(GET => $url);
+      $self->_validate_response($response, recognize_404 => $recognize_404);
+
+      return map { $class->new($self, $_) } @$response;
+   }
+   elsif ($call_type eq 'iterator') {
+      my $ks_iterator_name = $ks_iterator_name_by_class{$class}
+         or die("Can't determine Kickstarter iterator name for $class");
+
+      $url->query_param_append(@cursor)
+         if @cursor;
+
+      my $fetcher = sub {
+         my ($recognize_404) = @_;
+
+         return () if !$url;
+
+         my $response = $self->_http_request(GET => $url);
+         $self->_validate_response($response, recognize_404 => $recognize_404);
+
+         $response->{$ks_iterator_name}
+            or my_croak(500, "Error parsing response: Unrecognized format");
+
+         if (my $more_url = $response->{urls}{api}{"more_".$ks_iterator_name}) {
+            $url = URI->new($more_url);
+            $url->query_param_delete('signature');
+            $url->query_param_append(oauth_token => $access_token);
+         } else {
+            $url = undef;
+         }
+
+         return map { $class->new($self, $_) } @{ $response->{$ks_iterator_name} };
+      };
+
+      # Prefetch the first batch to check for 404 errors.
+      my @results = $fetcher->($recognize_404);
+
+      return WWW::Kickstarter::Iterator->new($fetcher, \@results);
+   }
+   else {
+      die("Invalid call type $call_type");
+   }
+}
+
+
+# ---
+
+
+sub login {
+   my_croak(400, "Incorrect usage") if @_ < 3;
+   my ($self, $email, $password, %opts) = @_;
+
+   if (my @unrecognized = keys(%opts)) {
+      my_croak(400, "Unrecognized parameters @unrecognized");
+   }
+
+   my $response = $self->_http_request(
+      POST => 'https://api.kickstarter.com/xauth/access_token?client_id=2II5GGBZLOOZAA5XBU1U0Y44BU57Q58L8KOGM7H0E0YFHP3KTG',
+      Content => [
+         email    => $email,
+         password => $password,
+      ],
+   );
+
+   {
+      my $ksr_code = $response->{ksr_code};
+      if ($ksr_code && $ksr_code eq 'invalid_xauth_login') {
+         my_croak(401, "Invalid user name or password");
+      }
+   }
+
+   $self->_validate_response($response);
+
+   my $access_token = $response->{access_token}
+      or my_croak(500, "Error parsing response: Missing access token");
+
+   $self->{access_token} = $access_token;
+
+   my $user_data = $response->{user}
+      or my_croak(500, "Error parsing response: Missing user data");
+
+   my $myself = WWW::Kickstarter::User::Myself->new($self, $user_data);
+
+   $self->{my_id} = $myself->id;
+
+   return $myself;
+}
+
+
+# ---
+
+
+sub _projects {
+   my ($self, $fixed, %opts) = @_;
+
+   my %form;
+   for my $field_name (
+      'category',           # Category's "id", "slug" or "name".
+      'location',           # Location as a "Where on Earth Identifier" ("WOEID")
+      'sort',               # 'magic' (default), 'end_date', 'launch_date', 'popularity', 'most_funded'
+      'q',                  # Search terms
+      'backed_by_self',     # Boolean
+      'starred_by_self',    # Boolean
+      'backed_by_friends',  # Boolean
+      'picked_by_staff',    # Boolean
+      'state',              # 'all' (default), 'live', 'successful'
+      'pledged',            # 'all' (default), '0':<$10k, '1':$10k to $100k, '2':$100k to $1M, '3':>$1M
+      'goal',               # 'all' (default), '0':<$10k, '1':$10k to $100k, '2':$100k to $1M, '3':>$1M
+      'raised',             # 'all' (default), '0':<75%, '1':75% to 100%, '2':>100%
+      'tag_id',
+   ) {
+      $form{$field_name} = exists($fixed->{$field_name}) ? $fixed->{$field_name} : delete($opts{$field_name});
+   }
+
+   $form{category} = ''      if !defined($form{category});
+   $form{location} = ''      if !defined($form{location});
+   $form{sort}     = 'magic' if !defined($form{sort})        || !length($form{sort});
+   $form{q}        = ''      if !defined($form{q});
+   $form{state}    = 'all'   if !defined($form{state})       || !length($form{state});
+   $form{pledged}  = 'all'   if !defined($form{pledged})     || !length($form{pledged});
+   $form{goal}     = 'all'   if !defined($form{goal})        || !length($form{goal});
+   $form{raised}   = 'all'   if !defined($form{raised})      || !length($form{raised});
+   $form{tag_id}   = ''      if !defined($form{tag_id});
+
+   $form{sort} =~ /^(?:magic|end_date|launch_date|popularity|most_funded)\z/
+      or my_croak(400, "Unrecognized value for sort. Valid: magic, end_date, launch_date, popularity, most_funded");
+   $form{state} =~ /^(?:all|live|successful)\z/
+      or my_croak(400, "Unrecognized value for state. Valid: all, live, successful");
+   $form{pledged} =~ /^(?:all|[0123])\z/
+      or my_croak(400, "Unrecognized value for pledged. Valid: all, 0, 1, 2, 3");
+   $form{goal} =~ /^(?:all|[0123])\z/
+      or my_croak(400, "Unrecognized value for goal. Valid: all, 0, 1, 2, 3");
+   $form{raised} =~ /^(?:all|[012])\z/
+      or my_croak(400, "Unrecognized value for raised. Valid: all, 0, 1, 2");
+
+   my @query_params;
+   push @query_params, category_id => $form{category} if length($form{category});
+   push @query_params, woe_id      => $form{location} if length($form{location});
+   push @query_params, sort        => $form{sort}     if $form{sort} ne 'magic';
+   push @query_params, term        => $form{q}        if length($form{q});
+   push @query_params, backed      => '1'             if $form{backed_by_self};
+   push @query_params, starred     => '1'             if $form{starred_by_self};
+   push @query_params, social      => '1'             if $form{backed_by_friends};
+   push @query_params, staff_picks => '1'             if $form{picked_by_staff};
+   push @query_params, state       => $form{state}    if $form{state}   ne 'all';
+   push @query_params, pledged     => $form{pledged}  if $form{pledged} ne 'all';
+   push @query_params, goal        => $form{goal}     if $form{goal}    ne 'all';
+   push @query_params, raised      => $form{raised}   if $form{raised}  ne 'all';
+   push @query_params, tag_id      => $form{tag_id}   if length($form{tag_id});
+
+   my $url = URI->new('discover', 'http');
+   $url->query_param_append(@query_params);
+
+   return $self->_call_api($url, [ 'iterator', cursor_style=>'page' ], 'Project', %opts);
+}
+
+
+# ---
+
+
+sub myself {
+   my $self = shift;
+   return $self->_call_api('users/self', 'single', 'User::Myself', @_);
+}
+
+sub my_id {
+   my ($self) = @_;
+   return $self->{my_id};
+}
+
+sub my_notification_prefs {
+   my $self = shift;
+   return $self->_call_api('users/self/notifications', 'list', 'NotificationPref', @_);
+}
+
+sub my_projects_created {
+   my $self = shift;
+   return $self->_call_api('users/self/projects/created', 'list', 'Project', @_);
+}
+
+# # There's no way to make this become sorted by backing timestamp, so we'll continue to use the original interface.
+# sub my_projects_backed {
+#    my $self = shift;
+#    return $self->_projects({ backed_by_self => 1 }, @_);
+# }
+
+sub my_projects_backed {
+   my $self = shift;
+   return $self->_call_api('users/self/projects/backed', [ 'iterator', cursor_style=>'start' ], 'Project', @_);
+}
+
+# # There's no way to make this become sorted by starring timestamp, so we'll continue to use the original interface.
+# sub my_projects_starred {
+#    my $self = shift;
+#    return $self->_projects({ starred_by_self => 1 }, @_);
+# }
+
+sub my_projects_starred {
+   my $self = shift;
+   return $self->_call_api('users/self/projects/starred', [ 'iterator', cursor_style=>'start' ], 'Project', @_);
+}
+
+sub user {
+   my_croak(400, "Incorrect usage") if @_ < 2;
+   my $self    = shift;
+   my $user_id = shift;  # From "id" field. Cannot be "slug".
+   return $self->_call_api('users/'.uri_escape_utf8($user_id), [ 'single', recognize_404=>1 ], 'User', @_);
+}
+
+sub user_projects_created {
+   my_croak(400, "Incorrect usage") if @_ < 2;
+   my $self    = shift;
+   my $user_id = shift;  # From "id" field. Cannot be "slug".
+   return $self->_call_api('users/'.uri_escape_utf8($user_id).'/projects/created', [ 'list', recognize_404=>1 ], 'Project', @_);
+}
+
+sub project {
+   my_croak(400, "Incorrect usage") if @_ < 2;
+   my $self       = shift;
+   my $project_id = shift;  # "id" or "slug".
+   return $self->_call_api('projects/'.uri_escape_utf8($project_id), [ 'single', recognize_404=>1 ], 'Project', @_);
+}
+
+sub projects {
+   my $self = shift;
+   return $self->_projects({}, @_);
+}
+
+sub projects_recommended {
+   my $self = shift;
+   return $self->_projects({ staff_picks => 1 }, @_);
+}
+
+sub projects_ending_soon {
+   my $self = shift;
+   return $self->_projects({ state => 'live', sort => 'end_date' }, @_);
+}
+
+sub projects_recently_launched {
+   my $self = shift;
+   return $self->_projects({ state => 'live', sort => 'launch_date' }, @_);
+}
+
+sub popular_projects {
+   my $self = shift;
+   return $self->_projects({ sort => 'popularity' }, @_);
+}
+
+sub category {
+   my_croak(400, "Incorrect usage") if @_ < 2;
+   my $self        = shift;
+   my $category_id = shift;  # "id", "slug" or "name".
+   return $self->_call_api('categories/'.uri_escape_utf8($category_id), [ 'single', recognize_404=>1 ], 'Category', @_);
+}
+
+sub categories {
+   my $self = shift;
+   my $iter = $self->_call_api('categories', 'iterator', 'Category');
+   return WWW::Kickstarter::Categories->new($self, [ $iter->get_rest() ]);
+}
+
+sub category_projects {
+   my_croak(400, "Incorrect usage") if @_ < 2;
+   my $self        = shift;
+   my $category_id = shift;  # "id", "slug" or "name".
+   return $self->_projects({ category_id => $category_id }, @_);
+}
+
+sub category_projects_recommended {
+   my_croak(400, "Incorrect usage") if @_ < 2;
+   my $self        = shift;
+   my $category_id = shift;  # "id", "slug" or "name".
+   return $self->_projects({ category_id => $category_id, staff_picks => 1 }, @_);
+}
+
+
+# ---
+
 
 1;
 
@@ -28,32 +512,416 @@ Version 0.9.0
 
 =head1 SYNOPSIS
 
-    use WWW::Kickstarter;
+   use WWW::Kickstarter;
 
-    ~~~
+   my $email    = '...';  # Your Kickstarter login credentials
+   my $password = '...';
+
+   my $ks = WWW::Kickstarter->new();
+   my $myself = $ks->login($email, $password);
+
+   my $iter = $ks->projects_ending_soon();
+   while (my ($project) = $iter->()) {
+      print($project->name, "\n");
+   }
 
 
 =head1 DESCRIPTION
 
+This distribution provides access to Kickstarter's private API
+to obtain information about your account, other users and and projects.
+
+
+=head1 CONSTRUCTOR
+
+   my $ks = WWW::Kickstarter->new(%opts);
+
+This is the starting point to using the API, after which you much login
+using the C<< $ks->login >> method documented immediately below.
+
+Options:
+
+=over
+
+=item * C<< agent => "application_name/version " >>
+
+The string to pass to Kickstarter in the User-Agent HTTP header.
+If the string ends with a space, the name and version of this library will be appended,
+as will the name of version of the underling HTTP client.
+
+
+=item * C<< impolite => 1 >>
+
+This module throttles the rate at which it sends requests to Kickstarter.
+It won't place another request until C<$X> request has passed since the last request,
+where C<$X> is the amount of time taken to fulfill the last request, but at most 4 seconds.
+
+C<< impolite => 1 >> disables the throttling.
+
+
+=item * C<< http_client_class => $class_name >>
+
+The class to use instead of L<WWW::Kickstarter::HttpClient::Lwp> as the HTTP client.
+For example, this would allow you to easily substitute L<Net::Curl> for L<LWP::UserAgent>.
+See L<WWW::Kickstarter::HttpClient> for documentation on the interface the replacement class needs to provide.
+
+
+=item * C<< json_parser_class => $class_name >>
+
+The class to use instead of L<WWW::Kickstarter::JsonParser::JsonXs> as the JSON parser.
+For example, this would allow you to easily substitute L<JSON::PP> for L<JSON::XS>.
+See L<WWW::Kickstarter::JsonParser> for documentation on the interface the replacement class needs to provide.
+
+
+=back
+
+
+=head1 METHODS
+
+=head1 API CALLS
+
+=head2 login
+
+   my $myself = $ks->login($email, $password);
+
+You must login using your standard Kickstarter credentials before you can query the API.
+
+Returns a L<WWW::Kickstarter::User::Myself> object for the user that logged in.
+
+
+=head2 myself
+
+   my $myself = $ks->myself();
+
+Fetches and returns the logged-in user as a L<WWW::Kickstarter::User::Myself> object.
+
+
+=head2 my_notification_prefs
+
+   my @notification_prefs = $ks->my_notification_prefs();
+
+Fetches and returns the the logged-in user's notification preferences of backed projects as L<WWW::Kickstarter::NotificationPref> objects.
+The notification preferences for the project created last is returned first.
+
+
+=head2 my_projects_created
+
+   my @projects = $ks->my_projects_created();
+
+Fetches and returns the projects created by the logged-in user as L<WWW::Kickstarter::Project> objects.
+The project created last is returned first.
+
+
+=head2 my_projects_backed
+
+   my $projects_iter = $ks->my_projects_backed(%opts);
+
+Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns the projects backed by the logged-in user as L<WWW::Kickstarter::Project> objects.
+The most recently backed project is returned first.
+
+Note that some projects may be returned twice. This happens when the data being queried changes while the results are being traversed.
+
+Options:
+
+=over
+
+=item * C<< start => $index >>
+
+If provided, indicates how many of the initial results to skip over.
+
+=back
+
+
+=head2 my_projects_starred
+
+   my $projects_iter = $ks->my_projects_starred(%opts);
+
+Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns the projects starred by the logged-in user as L<WWW::Kickstarter::Project> objects.
+The most recently starred project is returned first.
+
+Note that some projects may be returned twice. This happens when the data being queried changes while the results are being traversed.
+
+Options:
+
+=over
+
+=item * C<< start => $index >>
+
+If provided, indicates how many of the initial results to skip over.
+
+=back
+
+
+=head2 user
+
+   my $user = $ks->user($user_id);
+
+Fetches and returns the specified user as a L<WWW::Kickstarter::User> object.
+
+Note that the argument must be the user's numerical id (as returned by C<< $user->id >>).
+
+
+=head2 user_projects_created
+
+   my @projects = $ks->user_projects_created($user_id);
+
+Fetches and returns the projects created by the specified user as L<WWW::Kickstarter::Project> objects. The project created last is returned first.
+
+Note that the argument must be the user's numerical id (as returned by C<< $user->id >>).
+
+
+=head2 project
+
+   my $project = $ks->project($project_id);
+   my $project = $ks->project($project_slug);
+
+Fetches and returns the specified project as a L<WWW::Kickstarter::Project> object.
+
+The argument may be the project's numerical id (as returned by C<< $project->id >>) or its user-friendly "slug" (as returned by C<< $project->slug >>).
+
+
+=head2 projects
+
+   my $projects_iter = $ks->projects(%opts);
+
+Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns all Kickstarter projects as L<WWW::Kickstarter::Project> objects.
+
+Note that some projects may be returned twice, and some might be skipped. This happens when the data being queried changes while the results are being traversed.
+
+Options:
+
+=over
+
+=item * C<< page => $index >>
+
+If provided, indicates how many pages of initial results to skip over.
+
+=item * C<< category => $category_id >>
+=item * C<< category => $category_slug >>
+=item * C<< category => $category_name >>
+
+Limits the projects returned to those of the specified category (or one of its subcategories).
+
+=item * C<< location => $woe_id >>
+
+Limits the projects returned to those associated with the specified location.
+
+=item * C<< sort => 'magic' >> (default)
+=item * C<< sort => 'end_date' >>
+=item * C<< sort => 'launch_date' >>
+=item * C<< sort => 'popularity' >>
+=item * C<< sort => 'most_funded' >>
+
+Controls the order in which the projects are returned.
+
+=item * C<< backed_by_self => 1 >>
+
+Limits the projects returned to those the logged-in user backed.
+
+=item * C<< starred_by_self => 1 >>
+
+Limits the projects returned to those the logged-in user starred.
+
+=item * C<< backed_by_friends => 1 >>
+
+Limits the projects returned to those friends of the logged-in user backed.
+
+=item * C<< picked_by_staff => 1 >>
+
+Limits the projects returned to those recommended by Kickstarter.
+
+=item * C<< state => 'live' >>
+=item * C<< state => 'successful' >>
+
+Limits the projects returned to those with the specified state.
+
+The empty string and the string C<all> are accepted as equivalent to not providing the option at all.
+
+=item * C<< goal => $goal_range_id >>
+
+Limits the projects returned to those which have a goal that falls within the specified range. The ranges are defined as follows:
+
+=over
+
+=item * C<0>: E<lt>$10k
+=item * C<1>: $10k to $100k
+=item * C<2>: $100k to $1M
+=item * C<3>: E<gt>$1M
+
+=back
+
+The empty string and the string C<all> are accepted as equivalent to not providing the option at all.
+
+=item * C<< pledged => $pledged_range_id >> 
+
+Limits the projects returned to those to which the amount pledged falls within the specified range. The ranges are defined as follows:
+
+=over
+
+=item * C<0>: E<lt>$10k
+=item * C<1>: $10k to $100k
+=item * C<2>: $100k to $1M
+=item * C<3>: E<gt>$1M
+
+=back
+
+The empty string and the string C<all> are accepted as equivalent to not providing the option at all.
+
+=item * C<< raised => $raised_range_id >>
+
+Limits the projects returned to those to which the amount pledged falls within the specified range. The ranges are defined as follows:
+
+=over
+
+=item * C<0>: E<lt>75%
+=item * C<1>: 75% to 100%
+=item * C<2>: E<gt>100%
+
+=back
+
+The empty string and the string C<all> are accepted as equivalent to not providing the option at all.
+
+=item * C<< tag_id => $tag_id >>
+
+~~~
+
+=back
+
+=head2 projects_recommended
+
+   my $projects_iter = $ks->projects_recommended(%opts);
+
+Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns recommended projects as L<WWW::Kickstarter::Project> objects.
+
+It accepts the same options as WWW::Kickstarter's C<L<projects>>.
+
+
+=head2 projects_ending_soon
+
+   my $projects_iter = $ks->projects_ending_soon(%opts);
+
+Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns projects ending soon as L<WWW::Kickstarter::Project> objects. The project closest to its deadline is returned first.
+
+It accepts the same options as WWW::Kickstarter's C<L<projects>>.
+
+
+=head2 projects_recently_launched
+
+   my $projects_iter = $ks->projects_recently_launched(%opts);
+
+Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns recently launched projects as L<WWW::Kickstarter::Project> objects. The recently launched project is returned first.
+
+It accepts the same options as WWW::Kickstarter's C<L<projects>>.
+
+
+=head2 popular_projects
+
+   my $projects_iter = $ks->popular_projects(%opts);
+
+Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns popular projects as L<WWW::Kickstarter::Project> objects.
+
+It accepts the same options as WWW::Kickstarter's C<L<projects>>.
+
+
+=head2 category
+
+   my $category = $ks->category($category_id);
+   my $category = $ks->category($category_slug);
+   my $category = $ks->category($category_name);
+
+Fetches and returns the specified category as a L<WWW::Kickstarter::Category> object.
+
+The argument may be the category's numerical id (as returned by C<< $category->id >>), its "slug" (as returned by C<< $category->slug >>) or its name (as returned by C<< $category->name >>).
+
+
+=head2 categories
+
+    my $categories = $ks->categories();
+
+Fetches and returns all the categories as a L<WWW::Kickstarter::Categories> object.
+
+
+=head2 category_projects
+
+   my $projects_iter = $ks->category_projects($category_id,   %opts);
+   my $projects_iter = $ks->category_projects($category_slug, %opts);
+   my $projects_iter = $ks->category_projects($category_name, %opts);
+
+Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns projects in the specified category as L<WWW::Kickstarter::Project> objects.
+
+The argument may be the category's numerical id (as returned by C<< $category->id >>), its "slug" (as returned by C<< $category->slug >>) or its name (as returned by C<< $category->name >>).
+
+It accepts the same options as WWW::Kickstarter's C<project>.
+
+
+=head2 category_projects_recommended
+
+   my $projects_iter = $ks->category_projects_recommended($category_id,   %opts);
+   my $projects_iter = $ks->category_projects_recommended($category_slug, %opts);
+   my $projects_iter = $ks->category_projects_recommended($category_name, %opts);
+
+Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns the recommended projects in the specified category as L<WWW::Kickstarter::Project> objects.
+
+The argument may be the category's numerical id (as returned by C<< $category->id >>), its "slug" (as returned by C<< $category->slug >>) or its name (as returned by C<< $category->name >>).
+
+It accepts the same options as WWW::Kickstarter's C<L<projects>>.
+
+
+=head1 ACCESSORS
+
+=head2 my_id
+
+   my $user_id = $ks->my_id;
+
+Returns the C<id> of the logged-in user. (This does not require a fetch.)
+
+
+=head1 ERROR REPORTING
+
+When an API call encounters an error, it throws a L<WWW::Kickstarter::Error> object as an exception.
+
 ~~~
 
 
-=head1 BUGS
+=head1 GARANTEE
+
+Kickstarter has not provided a public API. As such,
+this distribution uses a private API to obtain information.
+The API is subject to incompatible change without notice.
+This has already happened, and may happen again. I cannot
+guarantee the continuing operation of this distribution.
+
+
+=head1 BUGS AND KNOWN ISSUES
 
 Please report any bugs or feature requests to C<bug-WWW-Kickstarter at rt.cpan.org>,
 or through the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=WWW-Kickstarter>.
 I will be notified, and then you'll automatically be notified of progress on your bug as I make changes.
+
+The following issues are known:
+
+=over
+
+=item * A lot of the data returned by the API has not been made available through accessors.
+
+=item * Some of the data that has not been available through accessors should be converted to objects (e.g. locations).
+
+=item * Some API calls may not have been made available.
+
+=item * Some API calls may not have been made available.
+
+=back
 
 
 =head1 SUPPORT
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc WWW::Kickstarter
+   perldoc WWW::Kickstarter
 
 You can also look for information at:
 
-=over 4
+=over
 
 =item * Search CPAN
 
@@ -78,7 +946,7 @@ L<http://cpanratings.perl.org/d/WWW-Kickstarter>
 
 Eric Brine, C<< <ikegami@adaelis.com> >>
 
-Initial release based on Mark Olson's "Kickscraper" project for Ruby.
+Initial release assisted by Mark Olson's "Kickscraper" project for Ruby.
 
 
 =head1 COPYRIGHT & LICENSE
