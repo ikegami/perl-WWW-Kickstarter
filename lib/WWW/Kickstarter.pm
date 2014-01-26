@@ -1,4 +1,4 @@
- 
+
 package WWW::Kickstarter;
 
 use strict;
@@ -396,26 +396,37 @@ sub my_projects_created {
    return $self->_call_api('users/self/projects/created', 'list', 'Project', @_);
 }
 
-# # There's no way to make this become sorted by backing timestamp, so we'll continue to use the original interface.
-# sub my_projects_backed {
-#    my $self = shift;
-#    return $self->_projects({ backed_by_self => 1 }, @_);
-# }
-
+# There's no way to have 'discover?backed=1' return the results sorted by backing timestamp,
+# so we'll continue to use the original interface ('users/self/projects/backed').
+# But for consistency and possibly for foward-compatibility, we'll require a page-style cursor.
 sub my_projects_backed {
-   my $self = shift;
-   return $self->_call_api('users/self/projects/backed', [ 'iterator', cursor_style=>'start' ], 'Project', @_);
+   my ($self, %opts) = @_;
+
+   if (exists($opts{start})) {
+      my_croak(400, "Unrecognized parameter start");
+   }
+
+   if (defined(my $page = delete($opts{page}))) {
+      $opts{start} = ($page - 1) * 10;
+   }
+
+   return $self->_call_api('users/self/projects/backed', [ 'iterator', cursor_style=>'start' ], 'Project', %opts);
 }
 
-# # There's no way to make this become sorted by starring timestamp, so we'll continue to use the original interface.
-# sub my_projects_starred {
-#    my $self = shift;
-#    return $self->_projects({ starred_by_self => 1 }, @_);
-# }
-
+# There's no way to have 'discover?starred=1' return the results sorted by starring timestamp,
+# so we'll continue to use the original interface ('users/self/projects/starred').
+# But for consistency and possibly for foward-compatibility, we'll require a page-style cursor.
 sub my_projects_starred {
-   my $self = shift;
-   return $self->_call_api('users/self/projects/starred', [ 'iterator', cursor_style=>'start' ], 'Project', @_);
+   my ($self, %opts) = @_;
+
+   if (exists($opts{start})) {
+      my_croak(400, "Unrecognized parameter start");
+   }
+
+   if (defined(my $page = delete($opts{page}))) {
+      $opts{start} = ($page - 1) * 10;
+   }
+   return $self->_call_api('users/self/projects/starred', [ 'iterator', cursor_style=>'start' ], 'Project', %opts);
 }
 
 sub user {
@@ -625,9 +636,9 @@ Options:
 
 =over
 
-=item * C<< start => $index >>
+=item * C<< page => $page_num >>
 
-If provided, indicates how many of the initial results to skip over.
+If provided, the pages of results before the specified page number are skipped.
 
 =back
 
@@ -645,9 +656,9 @@ Options:
 
 =over
 
-=item * C<< start => $index >>
+=item * C<< page => $page_num >>
 
-If provided, indicates how many of the initial results to skip over.
+If provided, the pages of results before the specified page number are skipped.
 
 =back
 
@@ -692,9 +703,9 @@ Options:
 
 =over
 
-=item * C<< page => $index >>
+=item * C<< page => $page_num >>
 
-If provided, indicates how many pages of initial results to skip over.
+If provided, the pages of results before the specified page number are skipped.
 
 =item * C<< category => $category_id >>
 =item * C<< category => $category_slug >>
@@ -752,7 +763,7 @@ Limits the projects returned to those which have a goal that falls within the sp
 
 The empty string and the string C<all> are accepted as equivalent to not providing the option at all.
 
-=item * C<< pledged => $pledged_range_id >> 
+=item * C<< pledged => $pledged_range_id >>
 
 Limits the projects returned to those to which the amount pledged falls within the specified range. The ranges are defined as follows:
 
