@@ -15,9 +15,6 @@ use LWP::UserAgent          qw( );
 use WWW::Kickstarter::Error qw( my_croak );
 
 
-our $TRACE ||= 0;
-
-
 sub new {
    my ($class, %opts) = @_;
 
@@ -51,17 +48,10 @@ sub request {
    else { my_croak(400, "Unexpected argument"); }
 
    my $http_response = $self->{http_client}->request($http_request);
-   if ($TRACE) {
-      print(STDERR "v--------------------v\n");
-      print(STDERR $http_request->as_string());
-      print(STDERR "----------------------\n");
-      print(STDERR $http_response->as_string());
-      print(STDERR "^--------------------^\n");
-   }
 
    my $status_code      = $http_response->code();
    my $status_line      = $http_response->status_line();
-   my $content_type     = $http_response->content_type();  # Lowercase with "parameters" are filtered out.
+   my $content_type     = $http_response->content_type();  # Lowercase with "parameters" filtered out.
    my $content_encoding = $http_response->content_type_charset();
    my $content          = $http_response->decoded_content( charset => 'none' );
 
