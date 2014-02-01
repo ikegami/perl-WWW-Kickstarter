@@ -7,9 +7,25 @@ no autovivification;
 
 
 use WWW::Kickstarter::Object qw( );
+use WWW::Kickstarter::User   qw( );
 
 
 our @ISA = 'WWW::Kickstarter::Object';
+
+
+sub new {
+   my_croak(400, "Incorrect usage") if @_ < 3;
+   my ($class, $ks, $data, %opts) = @_;
+
+   if (my @unrecognized = keys(%opts)) {
+      my_croak(400, "Unrecognized parameters @unrecognized");
+   }
+
+   my $self = $class->SUPER::new($ks, $data);
+   $self->{creator} = WWW::Kickstarter::User->new($ks, $self->{creator}) if exists($self->{creator});
+
+   return $self;
+}
 
 
 sub id            { $_[0]{id} }
@@ -22,6 +38,7 @@ sub deadline      { $_[0]{deadline} }       # When project ends
 sub backers_count { $_[0]{backers_count} }
 sub goal          { $_[0]{goal} }
 sub pledged       { $_[0]{pledged} }
+sub creator       { $_[0]{creator} }
 
 sub category_id   { $_[0]{category}{id} }
 sub category_name { $_[0]{category}{name} }
@@ -130,6 +147,15 @@ Returns the amount of USD the project is attempting to raise.
    my $project_pledged = $project->pledged;
 
 Returns the amount of USD that has been pledged to the project.
+
+
+=head2 creator
+
+   my $user = $project->creator;
+
+Returns the creator of the project as an L<WWW::Kickstarter::User> object.
+
+Some data will not available without a refetch.
 
 
 =head2 category_id   
