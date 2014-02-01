@@ -17,6 +17,7 @@ sub slug { $_[0]{slug} }
 sub name { $_[0]{name} }
 
 
+sub refetch          { my $self = shift;  return $self->ks->user($self->id, @_); }
 sub projects_created { my $self = shift;  return $self->ks->user_projects_created($self->id, @_); }
 
 
@@ -38,6 +39,13 @@ WWW::Kickstarter::User - Kickstarter user data
 
 
 =head1 API CALLS
+
+=head2 refetch
+
+   $user = $user->refetch();
+
+Refetches this user from Kickstarter.
+
 
 =head2 projects_created
 

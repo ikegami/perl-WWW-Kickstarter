@@ -30,6 +30,10 @@ sub progress      { $_[0]{pledged} / $_[0]{goal} }
 sub progress_pct  { sprintf "%.0f", $_[0]{pledged} / $_[0]{goal} * 100 }
    
 
+sub refetch { my $self = shift;  return $self->ks->project($self->id, @_); }
+# ~~~
+
+
 1;
 
 
@@ -49,7 +53,11 @@ WWW::Kickstarter::Project - Kickstarter project data
 
 =head1 API CALLS
 
-~~~
+=head2 refetch
+
+   $project = $project->refetch();
+   
+Refetches this project from Kickstarter.
 
 
 =head1 ACCESSORS

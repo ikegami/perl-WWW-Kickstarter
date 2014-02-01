@@ -42,6 +42,13 @@ sub new {
 }
 
 
+sub categories           { @{ $_[0]{categories} } }
+sub top_level_categories { @{ $_[0]{top_level} } }
+
+
+sub refetch { my $self = shift;  return $self->ks->categories(@_); }
+
+
 sub _visit {
    my $self     = shift;
    my $visitor  = shift;
@@ -88,10 +95,6 @@ sub visit {
 }
 
 
-sub categories           { @{ $_[0]{categories} } }
-sub top_level_categories { @{ $_[0]{top_level} } }
-
-
 1;
 
 
@@ -112,6 +115,15 @@ WWW::Kickstarter::Categories - Kickstarter categories
 =head1 DESCRIPTION
 
 ~~~
+
+
+=head1 API CALLS
+
+=head2 refetch
+
+   $categories = $categories->refetch();
+
+Refetches the categories from Kickstarter.
 
 
 =head1 METHODS

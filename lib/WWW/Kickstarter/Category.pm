@@ -45,6 +45,7 @@ sub subcategories {
 }
 
 
+sub refetch              { my $self = shift;  return $self->ks->category($self->id, @_); }
 sub projects             { my $self = shift;  return $self->ks->category_projects($self->id, @_); }
 sub projects_recommended { my $self = shift;  return $self->ks->category_projects_recommended($self->id, @_); }
 
@@ -67,6 +68,13 @@ WWW::Kickstarter::Category - Kickstarter category data
 
 
 =head1 API CALLS
+
+=head2 refetch
+
+   $category = $category->refetch();
+
+Refetches the category from Kickstarter.
+
 
 =head2 projects
 
