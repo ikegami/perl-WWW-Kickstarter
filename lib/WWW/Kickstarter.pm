@@ -10,8 +10,8 @@ use version; our $VERSION = qv('v0.9.0');
 
 use Time::HiRes                        qw( );
 use URI                                qw( );
-use URI::QueryParam                    qw( uri_escape_utf8 );
-use URI::Escape                        qw( );
+use URI::QueryParam                    qw( );
+use URI::Escape                        qw( uri_escape_utf8 );
 use WWW::Kickstarter::Categories       qw( );
 use WWW::Kickstarter::Category         qw( );
 use WWW::Kickstarter::Error            qw( my_croak );
