@@ -325,7 +325,7 @@ sub _projects {
       'pledged',            # 'all' (default), '0':<$10k, '1':$10k to $100k, '2':$100k to $1M, '3':>$1M
       'goal',               # 'all' (default), '0':<$10k, '1':$10k to $100k, '2':$100k to $1M, '3':>$1M
       'raised',             # 'all' (default), '0':<75%, '1':75% to 100%, '2':>100%
-      'tag_id',
+      'tag',                # Tag's "id" or "slug".
    ) {
       $form{$field_name} = exists($fixed->{$field_name}) ? $fixed->{$field_name} : delete($opts{$field_name});
    }
@@ -338,7 +338,7 @@ sub _projects {
    $form{pledged}  = 'all'   if !defined($form{pledged})     || !length($form{pledged});
    $form{goal}     = 'all'   if !defined($form{goal})        || !length($form{goal});
    $form{raised}   = 'all'   if !defined($form{raised})      || !length($form{raised});
-   $form{tag_id}   = ''      if !defined($form{tag_id});
+   $form{tag}      = ''      if !defined($form{tag});
 
    $form{sort} =~ /^(?:magic|end_date|launch_date|popularity|most_funded)\z/
       or my_croak(400, "Unrecognized value for sort. Valid: magic, end_date, launch_date, popularity, most_funded");
@@ -364,7 +364,7 @@ sub _projects {
    push @query_params, pledged     => $form{pledged}  if $form{pledged} ne 'all';
    push @query_params, goal        => $form{goal}     if $form{goal}    ne 'all';
    push @query_params, raised      => $form{raised}   if $form{raised}  ne 'all';
-   push @query_params, tag_id      => $form{tag_id}   if length($form{tag_id});
+   push @query_params, tag_id      => $form{tag}      if length($form{tag});
 
    my $url = URI->new('discover', 'http');
    $url->query_param_append(@query_params);
@@ -792,9 +792,33 @@ Limits the projects returned to those to which the amount pledged falls within t
 
 The empty string and the string C<all> are accepted as equivalent to not providing the option at all.
 
-=item * C<< tag_id => $tag_id >>
+=item * C<< tag => $tag_id >>
+=item * C<< tag => $tag_slug >>
 
-~~~
+Limits the projects returned to those with the specified tag.
+
+I don't know of an API endpoint that returns a list of available tags. The following are the tags that currently exist:
+
+=over
+
+=item * Arctic (id: 39, slug: arctic)
+=item * Bikes (id: 50, slug: bikes)
+=item * Cats (id: 31, slug: cats)
+=item * Civic (id: 3, slug: civic)
+=item * Cthulhu (id: 38, slug: cthulhu)
+=item * Library (id: 46, slug: library)
+=item * Maps (id: 48, slug: maps)
+=item * Movie Theater (id: 43, slug: movie-theater)
+=item * Museums (id: 63, slug: museums)
+=item * Open source (id: 20, slug: open-source)
+=item * Robots (id: 41, slug: robots)
+=item * RPG (id: 33, slug: rpg)
+=item * Science (id: 19, slug: science)
+=item * Space (id: 28, slug: space)
+=item * Zombies (id: 30, slug: zombies)
+
+=back
+
 
 =back
 
