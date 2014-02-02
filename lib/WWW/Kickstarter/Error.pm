@@ -24,19 +24,19 @@ $Carp::CarpInternal{ (__PACKAGE__) } = 1;
       WWW::Kickstarter::Categories
       WWW::Kickstarter::Category
       WWW::Kickstarter::Error
-      WWW::Kickstarter::HttpClient
+      WWW::Kickstarter::HttpClient::Lwp
       WWW::Kickstarter::Iterator
-      WWW::Kickstarter::JsonParser
+      WWW::Kickstarter::JsonParser::JsonXS
       WWW::Kickstarter::NotificationPref
       WWW::Kickstarter::Object
       WWW::Kickstarter::Project
       WWW::Kickstarter::User
       WWW::Kickstarter::User::Myself
    );
-   
+
    my $code = join '', map "package $_; our \@CARP_NOT = \@pkgs;\n", @pkgs;
    eval $code."1" or die $@;
-}   
+}
 
 
 sub my_croak {
