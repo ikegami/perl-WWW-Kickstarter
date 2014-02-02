@@ -213,13 +213,13 @@ sub _call_api {
       my $response = $self->_http_request(GET => $url);
       $self->_validate_response($response, recognize_404 => $recognize_404);
 
-      return $class->new($self, $response);
+      return $class->_new($self, $response);
    }
    elsif ($call_type eq 'list') {
       my $response = $self->_http_request(GET => $url);
       $self->_validate_response($response, recognize_404 => $recognize_404);
 
-      return map { $class->new($self, $_) } @$response;
+      return map { $class->_new($self, $_) } @$response;
    }
    elsif ($call_type eq 'iterator') {
       my $ks_iterator_name = $ks_iterator_name_by_class{$class}
@@ -247,7 +247,7 @@ sub _call_api {
             $url = undef;
          }
 
-         return map { $class->new($self, $_) } @{ $response->{$ks_iterator_name} };
+         return map { $class->_new($self, $_) } @{ $response->{$ks_iterator_name} };
       };
 
       # Prefetch the first batch to check for 404 errors.
@@ -297,7 +297,7 @@ sub login {
    my $user_data = $response->{user}
       or my_croak(500, "Error parsing response: Missing user data");
 
-   my $myself = WWW::Kickstarter::User::Myself->new($self, $user_data);
+   my $myself = WWW::Kickstarter::User::Myself->_new($self, $user_data);
 
    $self->{my_id} = $myself->id;
 
@@ -485,7 +485,7 @@ sub category {
 sub categories {
    my $self = shift;
    my $iter = $self->_call_api('categories', 'iterator', 'Category');
-   return WWW::Kickstarter::Categories->new($self, [ $iter->get_rest() ]);
+   return WWW::Kickstarter::Categories->_new($self, [ $iter->get_rest() ]);
 }
 
 sub category_projects {

@@ -12,7 +12,7 @@ use WWW::Kickstarter::Error qw( my_croak );
 our @ISA = 'WWW::Kickstarter::Object';
 
 
-sub new {
+sub _new {
    my ($class, $ks, $categories, %opts) = @_;
    my_croak(400, "Incorrect usage") if @_ < 3;
 
@@ -38,7 +38,7 @@ sub new {
       top_level  => [ grep defined, @{ $tree[0] } ],
    };
 
-   return $class->SUPER::new($ks, $data);
+   return $class->SUPER::_new($ks, $data);
 }
 
 

@@ -9,7 +9,7 @@ no autovivification;
 use WWW::Kickstarter::Error qw( my_croak );
 
 
-sub new {
+sub _new {
    my ($class, $ks, $data, %opts) = @_;
    my_croak(400, "Incorrect usage") if @_ < 3;
 
@@ -49,14 +49,6 @@ WWW::Kickstarter::Object - Base class for Kickstarter data classes.
 
 Provides a constructor to the data classes in this distribution.
 It is meant to be instantiated only through inheritance.
-
-
-=head1 CONSTRUCTOR
-
-   my $obj = $class->new($ks, $data);
-
-Blesses the data structure returned from Kickstarter (C<$data>) into the appropriate class (C<$class>).
-C<$ks> is the L<WWW::Kickstarter> object used to fetch the data.
 
 
 =head1 ACCESSORS

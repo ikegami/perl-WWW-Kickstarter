@@ -13,7 +13,7 @@ use WWW::Kickstarter::User   qw( );
 our @ISA = 'WWW::Kickstarter::Object';
 
 
-sub new {
+sub _new {
    my_croak(400, "Incorrect usage") if @_ < 3;
    my ($class, $ks, $data, %opts) = @_;
 
@@ -21,8 +21,8 @@ sub new {
       my_croak(400, "Unrecognized parameters @unrecognized");
    }
 
-   my $self = $class->SUPER::new($ks, $data);
-   $self->{creator} = WWW::Kickstarter::User->new($ks, $self->{creator}) if exists($self->{creator});
+   my $self = $class->SUPER::_new($ks, $data);
+   $self->{creator} = WWW::Kickstarter::User->_new($ks, $self->{creator}) if exists($self->{creator});
 
    return $self;
 }

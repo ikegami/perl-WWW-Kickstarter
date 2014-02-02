@@ -13,7 +13,7 @@ use WWW::Kickstarter::Object qw( );
 our @ISA = 'WWW::Kickstarter::Object';
 
 
-sub new {
+sub _new {
    my ($class, $ks, $data, %opts) = @_;
    my_croak(400, "Incorrect usage") if @_ < 3;
 
@@ -21,7 +21,7 @@ sub new {
       my_croak(400, "Unrecognized parameters @unrecognized");
    }
 
-   my $self = $class->SUPER::new($ks, $data);
+   my $self = $class->SUPER::_new($ks, $data);
    $self->{_}{subcategories} = undef;
 
    return $self;
