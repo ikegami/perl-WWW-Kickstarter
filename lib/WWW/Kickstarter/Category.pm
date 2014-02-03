@@ -14,8 +14,8 @@ our @ISA = 'WWW::Kickstarter::Object';
 
 
 sub _new {
-   my ($class, $ks, $data, %opts) = @_;
    my_croak(400, "Incorrect usage") if @_ < 3;
+   my ($class, $ks, $data, %opts) = @_;
 
    if (my @unrecognized = keys(%opts)) {
       my_croak(400, "Unrecognized parameters @unrecognized");
