@@ -46,7 +46,14 @@ sub my_croak {
 
 
 sub new {
-   my ($class, $code, $message) = @_;
+   my $class   = shift;
+   my $code    = @_ > 1 ? shift : 500;
+   my $message = shift;
+
+   if (eval { $message->isa(__PACKAGE__) }) {
+      return $message;
+   }
+
    my $self = bless({}, $class);
    $self->{code   } = $code;
    $self->{message} = $message;
@@ -81,18 +88,22 @@ WWW::Kickstarter::Error - ~~~
 ~~~
 
 
+=head1 CONSTRUCTOR
+
+   my $error = WWW::Kickstarter::Error->new($code, $message);
+   my $error = WWW::Kickstarter::Error->new($message);
+
+Creates an WWW::Kickstarter::Error object from the specified C<$code> and C<$message>.
+See C<L<code>> for acceptable values for C<$code>.
+
+If C<$message> is an WWW::Kickstarter::Error object, it is simply returned.
+
+
 =head1 SUBROUTINES
 
    my_croak($code, $message);
 
-~~~
-
-
-=head1 CONSTRUCTOR
-
-   my $error = WWW::Kickstarter::Error->new($code, $message);
-
-~~~
+Creates a WWW::Kickstarter::Error object from the arguments and throws it as an exception.
 
 
 =head1 ACCESSORS
