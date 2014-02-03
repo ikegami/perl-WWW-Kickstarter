@@ -35,7 +35,7 @@ This module requires these other modules and libraries:
         LWP::UserAgent
 
     The default JSON parser requires the following:
-        JSON:XS
+        JSON::XS
 
 
 SUPPORT AND DOCUMENTATION

@@ -31,7 +31,7 @@ my $build = Module::Build->new(
       'LWP::UserAgent'        => 0,
 
       # Used by replaceable WWW::Kickstarter::JsonParser::JsonXs
-      'JSON:XS'               => 0,
+      'JSON::XS'              => 0,
    },
    add_to_cleanup => [ 'WWW-Kickstarter-*' ],
    meta_merge     => {
