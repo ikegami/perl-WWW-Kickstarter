@@ -20,7 +20,6 @@ sub _new {
    my $self = bless($data, $class);
    $self->{_} = {};
    $self->{_}{ks} = $ks;
-
    return $self;
 }
 
@@ -36,13 +35,6 @@ __END__
 =head1 NAME
 
 WWW::Kickstarter::Object - Base class for Kickstarter data classes.
-
-
-=head1 SYNOPSIS
-
-   use WWW::Kickstarter;
-
-   ~~~
 
 
 =head1 DESCRIPTION

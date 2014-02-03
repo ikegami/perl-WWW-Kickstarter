@@ -64,7 +64,52 @@ WWW::Kickstarter::Category - Kickstarter category data
 
    use WWW::Kickstarter;
 
-   ~~~
+   my $email    = '...';  # Your Kickstarter login credentials
+   my $password = '...';
+
+   my $ks = WWW::Kickstarter->new();
+   $ks->login($email, $password);
+
+   my $categories = $ks->categories();
+
+   $categories->visit(sub{
+      my ($category, $depth, $visit_next) = @_;
+      say "   " x $depth, $category->name;
+      1 while $visit_next->();
+   });
+
+
+=head1 ACCESSORS
+
+=head2 id
+
+   my $category_id = $category->id;
+
+Returns the numerical id of the category.
+
+
+=head2 slug
+
+   my $category_slug = $category->slug;
+
+Returns the text id of the category.
+
+
+=head2 name
+
+   my $category_name = $category->name;
+
+Returns the category's name.
+
+
+=head2 subcategories
+
+   my @categories = $category->subcategories;
+
+Returns the subcategories of this category as L<WWW::Kickstarter::Category> objects.
+
+This information is only evailable if this object was obtained (directly or indirectly)
+from a L<WWW::Kickstarter::Categories> object. An exception will be thrown otherwise.
 
 
 =head1 API CALLS
@@ -96,29 +141,6 @@ Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns the r
 The argument may be the category's numerical id (as returned by C<< $category->id >>), its "slug" (as returned by C<< $category->slug >>) or its name (as returned by C<< $category->name >>).
 
 It accepts the same options as WWW::Kickstarter's C<L<WWW::Kickstarter/projects>>.
-
-
-=head1 ACCESSORS
-
-=head2 id
-
-   my $category_id = $category->id;
-
-Returns the numerical category id of the category.
-
-
-=head2 name
-
-   my $category_name = $category->name;
-
-Returns the category's name.
-
-
-=head2 subcategories
-
-   my @categories = $category->subcategories;
-
-~~~
 
 
 =head1 VERSION, BUGS, KNOWN ISSUES, SUPPORT, AUTHORS, COPYRIGHT & LICENSE

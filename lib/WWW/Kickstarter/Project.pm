@@ -45,10 +45,9 @@ sub category_name { $_[0]{category}{name} }
 
 sub progress      { $_[0]{pledged} / $_[0]{goal} }
 sub progress_pct  { sprintf "%.0f", $_[0]{pledged} / $_[0]{goal} * 100 }
-   
+
 
 sub refetch { my $self = shift;  return $self->ks->project($self->id, @_); }
-# ~~~
 
 
 1;
@@ -65,84 +64,84 @@ WWW::Kickstarter::Project - Kickstarter project data
 
    use WWW::Kickstarter;
 
-   ~~~
+   my $email    = '...';  # Your Kickstarter login credentials
+   my $password = '...';
 
+   my $ks = WWW::Kickstarter->new();
+   $ks->login($email, $password);
 
-=head1 API CALLS
-
-=head2 refetch
-
-   $project = $project->refetch();
-   
-Refetches this project from Kickstarter.
+   my $iter = $ks->projects_ending_soon();
+   while (my ($project) = $iter->()) {
+      print($project->name, "\n");
+   }
 
 
 =head1 ACCESSORS
 
-=head2 id            
+=head2 id
 
    my $project_id = $project->id;
 
-Returns the numerical project id of the project.
+Returns the numerical id of the project.
 
 
-=head2 slug          
+=head2 slug
 
    my $project_slug = $project->slug;
 
-Returns the projects's creator-selected project id, or undef if it doesn't have one.
+Returns creator-selected text id of the project, or undef if it doesn't have one.
 
 
-=head2 name          
+=head2 name
 
    my $project_name = $project->name;
 
 Returns the project's name.
 
 
-=head2 url           
+=head2 url
 
    my $project_url = $project->url;
 
 Returns the web address of the project's main page.
 
 
-=head2 blurb         
+=head2 blurb
 
    my $project_blurb = $project->blurb;
 
 Returns a short plain-text description of the project.
 
 
-=head2 launched_at   
+=head2 launched_at
 
    my $project_launched_at = $project->launched_at;
 
 Returns the epoch timestamp (as returned by C<L<perlfunc/time>>) of the project's launch.
 
 
-=head2 deadline      
+=head2 deadline
 
    my $project_deadline = $project->deadline;
 
 Returns the epoch timestamp (as returned by C<L<perlfunc/time>>) of the project's deadline.
 
 
-=head2 backers_count 
+=head2 backers_count
 
    my $project_backers_count = $project->backers_count;
 
 Returns the number of backers the project has.
 
 
-=head2 goal          
+=head2 goal
 
    my $project_goal = $project->goal;
 
 Returns the amount of USD the project is attempting to raise.
 
 
-=head2 pledged       
+=head2 pledged
 
    my $project_pledged = $project->pledged;
 
@@ -158,32 +157,41 @@ Returns the creator of the project as an L<WWW::Kickstarter::User> object.
 Some data will not available without a refetch.
 
 
-=head2 category_id   
+=head2 category_id
 
    my $project_category_id = $project->category_id;
 
 Returns the id of the category of the project.
 
 
-=head2 category_name 
+=head2 category_name
 
    my $project_category_name = $project->category_name;
 
 Returns the name of the category of the project.
 
 
-=head2 progress      
+=head2 progress
 
    my $project_progress = $project->progress;
 
 Returns the progress towards the project's goal. E<gt>= 1.00: Goal reached.
 
 
-=head2 progress_pct  
+=head2 progress_pct
 
    my $project_progress_pct = $project->progress_pct;
 
 Returns the progress towards the project's goal as a percent. E<gt>= 100: Goal reached.
+
+
+=head1 API CALLS
+
+=head2 refetch
+
+   $project = $project->refetch();
+
+Refetches this project from Kickstarter.
 
 
 =head1 VERSION, BUGS, KNOWN ISSUES, SUPPORT, AUTHORS, COPYRIGHT & LICENSE

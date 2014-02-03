@@ -109,12 +109,31 @@ WWW::Kickstarter::Categories - Kickstarter categories
 
    use WWW::Kickstarter;
 
-   ~~~
+   my $email    = '...';  # Your Kickstarter login credentials
+   my $password = '...';
+
+   my $ks = WWW::Kickstarter->new();
+   $ks->login($email, $password);
+
+   my $categories = $ks->categories();
+
+   $categories->visit(sub{
+      my ($category, $depth, $visit_next) = @_;
+      say "   " x $depth, $category->name;
+      1 while $visit_next->();
+   });
 
 
-=head1 DESCRIPTION
+=head1 ACCESSORS
 
-~~~
+=head2 C<< my @categories = $categories->categories; >>
+
+Returns a L<WWW::Kickstarter::Category> object for each Kickstarter category.
+
+
+=head2 C<< my @categories = $categories->top_level_categories; >>
+
+Returns a L<WWW::Kickstarter::Category> object for each top-level Kickstarter category.
 
 
 =head1 API CALLS
@@ -141,7 +160,41 @@ Refetches the categories from Kickstarter.
 
 Traverses the category hiearchy in a depth-first, alphabetical manner.
 
-~~~
+The visitor is called with the following arguments:
+
+=over
+
+=item * C<$category>
+
+A category as an L<WWW::Kickstarter::Category> object.
+
+=item * C<$depth>
+
+The depth of the category in the hierarchy, zero for top-level categories.
+
+=item * C<$visit_next>
+
+A code reference that visits one subcategory each time it's called.
+Unless you want to avoid visiting a category's subcategories,
+it should be called until it returns false.
+
+=item * C<$num_subcategories>
+
+The number of subcategories this category has. The following are basically equivalent:
+
+=over
+
+=item * C<< 1 while $visit_next->(); >>
+=item * C<< $visit_next->() for 1..$num_subcategories; >>
+
+=back
+
+=item * C<@args>
+
+The values passed to C<visit> or C<&$visit_next>.
+
+=back
+
 
 Options:
 
@@ -149,8 +202,10 @@ Options:
 
 =item * C<< root => 1 >>
 
-~~~
-
+The visitor will be called one extra time for the root of the tree.
+C<$category> will be undefined in the visitor for this call.
+The root will have a depth of zero, so the top-level categories
+will have a depth of one.
 
 =back
 
@@ -181,7 +236,7 @@ Output:
       Product Design
    ...
 
-=item * Passing data down.
+=item * Passing data down to subcategories.
 
    $categories->visit(sub{
       my ($category, $depth, $visit_next, undef, $parent) = @_;
@@ -204,18 +259,18 @@ Output:
    ...
 
 
-=item * ~~~
+=item * Complex example
 
    $categories->visit({
       root    => 1,
       visitor => sub{
          my ($category, $depth, $visit_next, $num_subcategories, $subcategory_idx) = @_;
-   
+
          if ($category) {
             my $class = $subcategory_idx % 2 ? 'odd' : 'even';
             print qq{<li class="$class">} . $category->name;
          }
-   
+
          if ($num_subcategories) {
             say "<ul>";
             for my $subcategory_idx (1..$num_subcategories) {
@@ -223,7 +278,7 @@ Output:
             }
             say "</ul>";
          }
-   
+
          if ($category) {
             say "</li>"
          }
@@ -249,18 +304,6 @@ Output:
    </li>
    ...
    </ul>
-
-
-=head1 ACCESSORS
-
-=head2 C<< my @categories = $categories->categories; >>
-
-Returns a L<WWW::Kickstarter::Category> object for each Kickstarter category.
-
-
-=head2 C<< my @categories = $categories->top_level_categories; >>
-
-Returns a L<WWW::Kickstarter::Category> object for each top-level Kickstarter category.
 
 
 =head1 VERSION, BUGS, KNOWN ISSUES, SUPPORT, AUTHORS, COPYRIGHT & LICENSE

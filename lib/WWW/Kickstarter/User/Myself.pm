@@ -32,12 +32,22 @@ WWW::Kickstarter::User::Myself - Kickstarter user data for the logged-in user
 
    use WWW::Kickstarter;
 
-   ~~~
+   my $email    = '...';  # Your Kickstarter login credentials
+   my $password = '...';
+
+   my $ks = WWW::Kickstarter->new();
+   my $myself = $ks->login($email, $password);
+
+   my $iter = $myself->projects_backed();
+   while (my ($project) = $iter->()) {
+      print($project->name, "\n");
+   }
 
 
 =head1 DESCRIPTION
 
-Kickstarter provides more information on the logged-in user. This class extends L<WWW::Kickstarter::User> to provide that information.
+Kickstarter provides more information on the logged-in user than other users.
+This class extends L<WWW::Kickstarter::User> to provide that information.
 
 
 =head1 API CALLS
@@ -73,9 +83,9 @@ Options:
 
 =over
 
-=item * C<< start => $index >>
+=item * C<< page => $page_num >>
 
-If provided, indicates how many of the initial results to skip over.
+If provided, the pages of results before the specified page number are skipped.
 
 =back
 
@@ -93,18 +103,11 @@ Options:
 
 =over
 
-=item * C<< start => $index >>
+=item * C<< page => $page_num >>
 
-If provided, indicates how many of the initial results to skip over.
+If provided, the pages of results before the specified page number are skipped.
 
 =back
-
-
-=head1 ACCESSORS
-
-This class provides the following accessors in addition to those provided by L<WWW::Kickstarter::User>.
-
-~~~
 
 
 =head1 VERSION, BUGS, KNOWN ISSUES, SUPPORT, AUTHORS, COPYRIGHT & LICENSE

@@ -58,7 +58,6 @@ WWW::Kickstarter::NotificationPref - Notification preferences for projects you b
 Returns the numerical id of this notification preference.
 
 
-
 =head2 project_id
 
    my $project_id = $notification_pref->project_id;

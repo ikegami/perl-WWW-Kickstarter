@@ -42,7 +42,7 @@ The constructor. An L<WWW::Kickstarter::Error> object is thrown on error.
 =head2 decode
 
     my $data = $parser->decode($json);
-    
+
 Returns a data structure represented by the provided JSON string.
 The provided JSON string is expected to be encoded using UTF-8.
 An error message string is thrown on error.

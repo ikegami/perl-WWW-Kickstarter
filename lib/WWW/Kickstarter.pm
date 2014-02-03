@@ -606,7 +606,14 @@ See L<WWW::Kickstarter::JsonParser> for documentation on the interface the repla
 =back
 
 
-=head1 METHODS
+=head1 ACCESSORS
+
+=head2 my_id
+
+   my $user_id = $ks->my_id;
+
+Returns the id of the logged-in user.
+
 
 =head1 API CALLS
 
@@ -921,20 +928,9 @@ The argument may be the category's numerical id (as returned by C<< $category->i
 It accepts the same options as WWW::Kickstarter's C<L<projects>>.
 
 
-=head1 ACCESSORS
-
-=head2 my_id
-
-   my $user_id = $ks->my_id;
-
-Returns the C<id> of the logged-in user. (This does not require a fetch.)
-
-
 =head1 ERROR REPORTING
 
 When an API call encounters an error, it throws a L<WWW::Kickstarter::Error> object as an exception.
-
-~~~
 
 
 =head1 GARANTEE
@@ -962,9 +958,11 @@ The following issues are known:
 
 =item * Some API calls may not have been made available.
 
-=item * Some API calls may not have been made available.
+=item * Non-existent test suite.
 
 =back
+
+Feel free to bug me (C<< <ikegami@adaelis.com> >>) to work on these, or to submit a patch to the bug tracker.
 
 
 =head1 SUPPORT

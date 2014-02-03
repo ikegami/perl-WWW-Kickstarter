@@ -75,17 +75,32 @@ __END__
 
 =head1 NAME
 
-WWW::Kickstarter::Error - ~~~
+WWW::Kickstarter::Error - Kickstarter error information
 
 
 =head1 SYNOPSIS
 
-   ~~~
+   use WWW::Kickstarter;
+
+   my $email    = '...';  # Your Kickstarter login credentials
+   my $password = '...';
+
+   my $ks = WWW::Kickstarter->new();
+   $ks->login($email, $password);
+
+   my $exists = 1;
+   if (!eval { $ks->user($user_id); 1 }) {
+      my $e = WWW::Kickster::Error->new($@);
+      die $e if $e->code != 404;
+      $exists = 0;
+   }
 
 
 =head1 DESCRIPTION
 
-~~~
+By throwing objects of this class rather than a string,
+the caller can identify certain errors programatically
+without relying on matching the exact text of the message.
 
 
 =head1 CONSTRUCTOR
@@ -112,6 +127,8 @@ Creates a WWW::Kickstarter::Error object from the arguments and throws it as an 
 
    my $code = $error->code();
 
+The C<$code> passed to C<my_croak> or the constructor.
+
 One of the following:
 
 =over
@@ -135,12 +152,11 @@ A communication error or an unrecognized response.
 =back
 
 
-
 =head2 message
 
    my $message = $error->message();
 
-~~~
+The C<$message> passed to C<my_croak> or the constructor.
 
 
 =head2 as_string
@@ -148,7 +164,8 @@ A communication error or an unrecognized response.
    my $message = $error->as_string();
    my $message = "$error";
 
-~~~
+An error message complete with the file name and line number
+of the call into the WWW::Kickstarter library.
 
 
 =head1 EXPORTS
