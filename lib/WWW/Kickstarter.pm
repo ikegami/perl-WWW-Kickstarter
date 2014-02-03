@@ -121,7 +121,25 @@ sub _validate_response {
 
 
 sub _http_request {
-   my $self = shift;
+   my ($self, $method, $url, $form) = @_;
+
+   my $req_content;
+   if ($form) {
+      if ($method eq 'GET' ) {
+         $url = URI->new($url);
+         for (my $i=0; $i<@$form; $i+=2) {
+            $url->query_param_append($form->[$i+0] => $form->[$i+1]);
+         }
+      } else {
+         my @params;
+         for (my $i=0; $i<@$form; $i+=2) {
+            push @params, uri_escape_utf8($form->[$i+0]) . '=' . uri_escape_utf8($form->[$i+1]);
+         }
+
+         $req_content = join('&', @params);
+      }
+   }
+
 
    my $stime = Time::HiRes::time();
 
@@ -137,7 +155,8 @@ sub _http_request {
       }
    }
 
-   my ( $status_code, $status_line, $content_type, $content_encoding, $content ) = $self->{http_client}->request(@_);
+
+   my ( $status_code, $status_line, $content_type, $content_encoding, $content ) = $self->{http_client}->request($method, $url, $req_content);
 
    my $etime = Time::HiRes::time();
 
@@ -274,7 +293,7 @@ sub login {
 
    my $response = $self->_http_request(
       POST => 'https://api.kickstarter.com/xauth/access_token?client_id=2II5GGBZLOOZAA5XBU1U0Y44BU57Q58L8KOGM7H0E0YFHP3KTG',
-      Content => [
+      [
          email    => $email,
          password => $password,
       ],

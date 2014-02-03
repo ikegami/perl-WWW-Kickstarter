@@ -39,13 +39,22 @@ sub new {
 
 
 sub request {
-   my $self   = shift;
-   my $method = uc(shift);
+   my ($self, $method, $url, $req_content) = @_;
 
    my $http_request;
-   if    ($method eq 'GET' ) { $http_request = GET(@_);  }
-   elsif ($method eq 'POST') { $http_request = POST(@_); }
-   else { my_croak(400, "Unexpected argument"); }
+   if ($method eq 'GET' ) {
+      $http_request = GET($url);
+   }
+   elsif ($method eq 'POST') {
+      $http_request = POST($url,
+         Content_Length => length($req_content),
+         Content_Type   => 'application/x-www-form-urlencoded',
+         Content        => $req_content,
+      );
+   }
+   else {
+      my_croak(400, "Unexpected argument");
+   }
 
    my $http_response = $self->{http_client}->request($http_request);
 
