@@ -5,8 +5,6 @@ use strict;
 use warnings;
 no autovivification;
 
-use version; our $VERSION = qv('v0.9.0');
-
 
 use HTTP::Headers           qw( );
 use HTTP::Request::Common   qw( GET POST );
@@ -76,11 +74,6 @@ __END__
 =head1 NAME
 
 WWW::Kickstarter::HttpClient::Lwp - LWP connector for WWW::Kickstarter
-
-
-=head1 VERSION
-
-Version 0.9.0
 
 
 =head1 SYNOPSIS

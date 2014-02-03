@@ -5,8 +5,6 @@ use strict;
 use warnings;
 no autovivification;
 
-use version; our $VERSION = qv('v0.9.0');
-
 
 use JSON::XS                qw( );
 use WWW::Kickstarter::Error qw( my_croak );
@@ -36,11 +34,6 @@ __END__
 =head1 NAME
 
 WWW::Kickstarter::JsonParser::JsonXS - JSON::XS connector for WWW::Kickstarter
-
-
-=head1 VERSION
-
-Version 0.9.0
 
 
 =head1 SYNOPSIS

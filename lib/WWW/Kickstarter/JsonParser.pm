@@ -10,11 +10,6 @@ __END__
 WWW::Kickstarter::JsonParser - JSON parser connector for WWW::Kickstarter
 
 
-=head1 VERSION
-
-Version 0.9.0
-
-
 =head1 SYNOPSIS
 
    use WWW::Kickstarter;

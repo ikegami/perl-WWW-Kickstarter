@@ -10,11 +10,6 @@ __END__
 WWW::Kickstarter::HttpClient - HTTP client connector for WWW::Kickstarter
 
 
-=head1 VERSION
-
-Version 0.9.0
-
-
 =head1 SYNOPSIS
 
    use WWW::Kickstarter;
