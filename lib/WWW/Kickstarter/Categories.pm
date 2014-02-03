@@ -236,6 +236,7 @@ Output:
       Product Design
    ...
 
+
 =item * Passing data down to subcategories.
 
    $categories->visit(sub{
@@ -304,6 +305,9 @@ Output:
    </li>
    ...
    </ul>
+
+
+=back
 
 
 =head1 VERSION, BUGS, KNOWN ISSUES, SUPPORT, AUTHORS, COPYRIGHT & LICENSE
