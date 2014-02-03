@@ -24,13 +24,13 @@ my $build = Module::Build->new(
       'URI::QueryParam'       => 0,
       'version'               => 0,
 
-      # Used by replaceable WWW::Kickstarter::HttpClient
+      # Used by replaceable WWW::Kickstarter::HttpClient::Lwp
       'HTTP::Headers'         => 0,
       'HTTP::Request::Common' => 0,
       'LWP::Protocol::https'  => 0,
       'LWP::UserAgent'        => 0,
 
-      # Used by replaceable WWW::Kickstarter::JsonParser
+      # Used by replaceable WWW::Kickstarter::JsonParser::JsonXs
       'JSON:XS'               => 0,
    },
    add_to_cleanup => [ 'WWW-Kickstarter-*' ],
