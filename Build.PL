@@ -3,7 +3,18 @@ use warnings;
 
 use Module::Build qw( );
 
-my $build = Module::Build->new(
+my $class = Module::Build->subclass(
+   code => <<'__EOI__',
+      sub ACTION_disttest {
+         my $self = shift;
+         local $ENV{DEVEL_TESTS} = exists($ENV{DEVEL_TESTS}) ? $ENV{DEVEL_TESTS} : 1;
+         $self->SUPER::ACTION_disttest(@_);
+      }
+__EOI__
+);
+
+
+my $build = $class->new(
    module_name => 'WWW::Kickstarter',
    dist_author => 'Eric Brine <ikegami@adaelis.com>',
    license     => 'CC0_1_0',
