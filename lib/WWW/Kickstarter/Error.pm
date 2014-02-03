@@ -105,6 +105,8 @@ without relying on matching the exact text of the message.
 
 =head1 CONSTRUCTOR
 
+=head2 new
+
    my $error = WWW::Kickstarter::Error->new($code, $message);
    my $error = WWW::Kickstarter::Error->new($message);
 

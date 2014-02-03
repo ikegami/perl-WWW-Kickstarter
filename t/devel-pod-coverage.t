@@ -19,6 +19,21 @@ BEGIN {
       or plan skip_all => "Pod::Coverage $min_pc required for testing POD coverage";
 }
 
+BEGIN {
+   my %skip = map { $_ => 1 } (
+      'WWW::Kickstarter::HttpClient::Lwp',      # Documented in WWW::Kickstarter::HttpClient
+      'WWW::Kickstarter::JsonParser::JsonXs',   # Documented in WWW::Kickstarter::JsonParser
+      'WWW::Kickstarter::HttpClient',           # Doesn't compile.
+      'WWW::Kickstarter::JsonParser',           # Doesn't compile.
+   );
+
+   my $orig_all_modules = \&Test::Pod::Coverage::all_modules;
+   my $new_all_modules = sub { grep !$skip{$_}, $orig_all_modules->(@_) };
+
+   no warnings 'redefine';
+   *Test::Pod::Coverage::all_modules = $new_all_modules;
+}
+
 all_pod_coverage_ok();
 
 1;

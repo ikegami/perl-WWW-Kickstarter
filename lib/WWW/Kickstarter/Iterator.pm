@@ -97,6 +97,8 @@ Provides a means of iterating over Kickstarter results without doing more web qu
 
 =head1 CONSTRUCTOR
 
+=head2 new
+
    my $iter = WWW::Kickstarter::Iterator->new();
    my $iter = WWW::Kickstarter::Iterator->new(\&generator);
    my $iter = WWW::Kickstarter::Iterator->new(\&generator, \@pre_generated);

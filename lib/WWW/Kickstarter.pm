@@ -564,6 +564,8 @@ to obtain information about your account, other users and and projects.
 
 =head1 CONSTRUCTOR
 
+=head2 new
+
    my $ks = WWW::Kickstarter->new(%opts);
 
 This is the starting point to using the API, after which you much login
