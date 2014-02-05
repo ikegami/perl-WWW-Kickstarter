@@ -23,6 +23,7 @@ my $build = $class->new(
       'Software::License::CC0_1_0' => 0,
    },
    build_requires => {
+      'FindBin'    => 0,
       'Test::More' => 0,
    },
    requires => {

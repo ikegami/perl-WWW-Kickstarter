@@ -18,6 +18,7 @@ DEPENDENCIES
 This module requires these other modules and libraries:
 
     Module::Build    (For installation only)
+    FindBin          (For testing only)
     Test::More       (For testing only)
     autovivification
     Carp

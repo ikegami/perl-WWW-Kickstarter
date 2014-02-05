@@ -1,6 +1,8 @@
 use strict;
 use warnings;
 
+use FindBin qw( $RealBin );
+
 use Test::More;
 
 BEGIN {
@@ -34,6 +36,7 @@ BEGIN {
    *Test::Pod::Coverage::all_modules = $new_all_modules;
 }
 
+chdir($RealBin) or die $!;
 all_pod_coverage_ok();
 
 1;

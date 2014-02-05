@@ -81,7 +81,7 @@ sub visit {
    } else {
       $visitor = $opts->{visitor};
    }
-   
+
    if ($opts->{root}) {
       $self->_visit($visitor, undef, 0, @_);
    } else {
