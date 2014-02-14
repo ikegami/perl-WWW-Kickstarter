@@ -9,7 +9,7 @@ use Test::More;
 
 BEGIN {
    if ($ENV{DEVEL_TESTS}) {
-      plan tests => 2;
+      plan tests => 3;
    } else {
       plan skip_all => "Version checks are only performed when DEVEL_TESTS=1";
    }
@@ -27,18 +27,23 @@ sub slurp_file {
 {
    chdir("$RealBin/..") or die $!;
 
-   my $file = slurp_file('lib/WWW/Kickstarter.pm');
+   my $base_file    = slurp_file('lib/WWW/Kickstarter.pm');
+   my $changes_file = slurp_file('Changes');
 
-
-    my $version = $file =~ /\bqv\('v([^']*)'\)/
+   my ($version) = $base_file =~ /\bqv\('v([^']*)'\)/
       or die("Can't find version\n");
 
-   my $pod_version = $file =~ /^Version (\S+)/m
+   my @parts = split(/\./, $version);
+
+   my ($pod_version) = $base_file =~ /^Version (\S+)/m
+      or die("Can't find version in POD\n");
+
+   my ($changes_version) = $changes_file =~ /^([0-9]\S*)/m
       or die("Can't find version in POD\n");
 
    is($pod_version, $version, "Version in POD matches actual version");
 
-   my @parts = split(/\./, $version);
-
    ok($parts[1] % 2 == 0, "Version is a release version");
+
+   is($changes_version, $version, "Version in Changes file matches actual version");
 }
