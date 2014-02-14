@@ -1,6 +1,7 @@
 WWW-Kickstarter
 
-~~~
+This distribution provides access to Kickstarter's private API
+to obtain information about your account, other users and and projects.
 
 
 INSTALLATION
