@@ -9,7 +9,7 @@ use Test::More;
 
 BEGIN {
    $ENV{DEVEL_TESTS}
-      or plan skip_all => "Trailing whitespace checks are only performed when DEVEL_TESTS=1";
+      or plan skip_all => "Whitespace checks are only performed when DEVEL_TESTS=1";
 }
 
 sub slurp_file {
@@ -35,10 +35,18 @@ sub read_manifest {
 
    my @qfns = read_manifest();
 
-   plan tests => 0+@qfns;
+   plan tests => 2*@qfns;
 
    for my $qfn (@qfns) {
       my $file = slurp_file($qfn);
-      ok( $file !~ /[^\S\n]\n/, "$qfn - No trailing whitespace" );
+      my $rev_file = reverse($file);
+
+      if ($^O eq 'MSWin32') {
+         ok( $file !~ /\r(?!\n)/ && $rev_file !~ /\n(?!\r)/, "$qfn - Windows line endings" );
+      } else {
+         ok( $file !~ /\r/, "$qfn - Unix line endings" );
+      }
+
+      ok( $rev_file !~ /\n(?:\r[^\S\n]|[^\S\r\n])/, "$qfn - No trailing whitespace" );
    }
 }
