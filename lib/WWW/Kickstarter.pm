@@ -10,8 +10,8 @@ use version; our $VERSION = qv('v0.9.0');
 
 use Time::HiRes                              qw( );
 use URI                                      qw( );
-use URI::QueryParam                          qw( );
 use URI::Escape                              qw( uri_escape_utf8 );
+use URI::QueryParam                          qw( );
 use WWW::Kickstarter::Data::Categories       qw( );
 use WWW::Kickstarter::Data::Category         qw( );
 use WWW::Kickstarter::Data::NotificationPref qw( );
