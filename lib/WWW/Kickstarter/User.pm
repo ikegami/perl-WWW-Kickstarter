@@ -60,7 +60,7 @@ Returns the numerical id of the user.
 
    my $user_slug = $user->slug;
 
-Returns self-selected text id of the user, or undef if it's not available or if it doesn't have one.
+Returns self-selected keyword id of the user, or undef if it's not available or if it doesn't have one.
 
 
 =head2 name
@@ -84,8 +84,6 @@ Refetches this user from Kickstarter.
    my @projects = $user->projects_created();
 
 Fetches and returns the projects created by the specified user as L<WWW::Kickstarter::Project> objects. The project created last is returned first.
-
-Note that the argument must be the user's numerical id (as returned by C<< $user->id >>).
 
 
 =head1 VERSION, BUGS, KNOWN ISSUES, SUPPORT, AUTHORS, COPYRIGHT & LICENSE

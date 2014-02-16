@@ -27,6 +27,8 @@ This module documents the interface that must be provided by HTTP clients to be 
 
 =head1 CONSTRUCTOR
 
+=head2 new
+
    my $http_client = $http_client_class->new(%opts);
 
 The constructor. An L<WWW::Kickstarter::Error> object is thrown on error.

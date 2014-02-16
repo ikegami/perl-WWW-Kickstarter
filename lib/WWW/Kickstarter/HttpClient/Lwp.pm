@@ -91,7 +91,7 @@ WWW::Kickstarter::HttpClient::Lwp - LWP connector for WWW::Kickstarter
 This is the default HTTP client used by L<WWW::Kickstarter>.
 It uses L<LWP::UserAgent> to do the actual requests. WWW::Kickstarter
 can be instructed to use a different HTTP client, as long as it follows
-the interface documented in L<WWW::Kickstarter::JsonParserHttpClient>.
+the interface documented in L<WWW::Kickstarter::HttpClient>.
 
 
 =head1 VERSION, BUGS, KNOWN ISSUES, SUPPORT, AUTHORS, COPYRIGHT & LICENSE

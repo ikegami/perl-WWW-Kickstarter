@@ -27,6 +27,8 @@ This module documents the interface that must be provided by JSON parsers to be 
 
 =head1 CONSTRUCTOR
 
+=head2 new
+
    my $parser = $json_parser_class->new();
 
 The constructor. An L<WWW::Kickstarter::Error> object is thrown on error.

@@ -585,7 +585,7 @@ as will the name of version of the underling HTTP client.
 =item * C<< impolite => 1 >>
 
 This module throttles the rate at which it sends requests to Kickstarter.
-It won't place another request until C<$X> request has passed since the last request,
+It won't place another request until C<$X> seconds has passed since the last request,
 where C<$X> is the amount of time taken to fulfill the last request, but at most 4 seconds.
 
 C<< impolite => 1 >> disables the throttling.
@@ -697,7 +697,7 @@ If provided, the pages of results before the specified page number are skipped.
 
 Fetches and returns the specified user as a L<WWW::Kickstarter::User> object.
 
-Note that the argument must be the user's numerical id (as returned by C<< $user->id >>).
+Note that the argument must be the user's numerical id (as returned by L<C<< $user->id >>|WWW::Kickstarter::User/id>).
 
 
 =head2 user_projects_created
@@ -706,7 +706,7 @@ Note that the argument must be the user's numerical id (as returned by C<< $user
 
 Fetches and returns the projects created by the specified user as L<WWW::Kickstarter::Project> objects. The project created last is returned first.
 
-Note that the argument must be the user's numerical id (as returned by C<< $user->id >>).
+Note that the argument must be the user's numerical id (as returned by L<C<< $user->id >>|WWW::Kickstarter::User/id>).
 
 
 =head2 project
@@ -716,7 +716,8 @@ Note that the argument must be the user's numerical id (as returned by C<< $user
 
 Fetches and returns the specified project as a L<WWW::Kickstarter::Project> object.
 
-The argument may be the project's numerical id (as returned by C<< $project->id >>) or its user-friendly "slug" (as returned by C<< $project->slug >>).
+The argument may be the project's numerical id (as returned by L<C<< $project->id >>|WWW::Kickstarter::Project/id>) or
+its "slug" (as returned by L<C<< $project->slug >>|WWW::Kickstarter::Project/slug>).
 
 
 =head2 projects
@@ -736,7 +737,9 @@ Options:
 If provided, the pages of results before the specified page number are skipped.
 
 =item * C<< category => $category_id >>
+
 =item * C<< category => $category_slug >>
+
 =item * C<< category => $category_name >>
 
 Limits the projects returned to those of the specified category (or one of its subcategories).
@@ -746,9 +749,13 @@ Limits the projects returned to those of the specified category (or one of its s
 Limits the projects returned to those associated with the specified location.
 
 =item * C<< sort => 'magic' >> (default)
+
 =item * C<< sort => 'end_date' >>
+
 =item * C<< sort => 'launch_date' >>
+
 =item * C<< sort => 'popularity' >>
+
 =item * C<< sort => 'most_funded' >>
 
 Controls the order in which the projects are returned.
@@ -770,6 +777,7 @@ Limits the projects returned to those friends of the logged-in user backed.
 Limits the projects returned to those recommended by Kickstarter.
 
 =item * C<< state => 'live' >>
+
 =item * C<< state => 'successful' >>
 
 Limits the projects returned to those with the specified state.
@@ -783,8 +791,11 @@ Limits the projects returned to those which have a goal that falls within the sp
 =over
 
 =item * C<0>: E<lt>$10k
+
 =item * C<1>: $10k to $100k
+
 =item * C<2>: $100k to $1M
+
 =item * C<3>: E<gt>$1M
 
 =back
@@ -798,8 +809,11 @@ Limits the projects returned to those to which the amount pledged falls within t
 =over
 
 =item * C<0>: E<lt>$10k
+
 =item * C<1>: $10k to $100k
+
 =item * C<2>: $100k to $1M
+
 =item * C<3>: E<gt>$1M
 
 =back
@@ -813,7 +827,9 @@ Limits the projects returned to those to which the amount pledged falls within t
 =over
 
 =item * C<0>: E<lt>75%
+
 =item * C<1>: 75% to 100%
+
 =item * C<2>: E<gt>100%
 
 =back
@@ -821,32 +837,48 @@ Limits the projects returned to those to which the amount pledged falls within t
 The empty string and the string C<all> are accepted as equivalent to not providing the option at all.
 
 =item * C<< tag => $tag_id >>
+
 =item * C<< tag => $tag_slug >>
 
 Limits the projects returned to those with the specified tag.
 
-I don't know of an API endpoint that returns a list of available tags. The following are the tags that currently exist:
+I don't know of an API endpoint that returns a list of available tags. The following are the tags that exist at the time of this writing:
 
 =over
 
 =item * Arctic (id: 39, slug: arctic)
+
 =item * Bikes (id: 50, slug: bikes)
+
 =item * Cats (id: 31, slug: cats)
+
 =item * Civic (id: 3, slug: civic)
+
 =item * Cthulhu (id: 38, slug: cthulhu)
+
 =item * Library (id: 46, slug: library)
+
 =item * Maps (id: 48, slug: maps)
+
 =item * Movie Theater (id: 43, slug: movie-theater)
+
 =item * Museums (id: 63, slug: museums)
+
 =item * Open source (id: 20, slug: open-source)
+
 =item * Robots (id: 41, slug: robots)
+
 =item * RPG (id: 33, slug: rpg)
+
 =item * Science (id: 19, slug: science)
+
 =item * Space (id: 28, slug: space)
+
 =item * Zombies (id: 30, slug: zombies)
 
 =back
 
+This list was obtained from L<Kickstarter's Advanced Discover page|https://www.kickstarter.com/discover/advanced>.
 
 =back
 
@@ -856,7 +888,7 @@ I don't know of an API endpoint that returns a list of available tags. The follo
 
 Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns recommended projects as L<WWW::Kickstarter::Project> objects.
 
-It accepts the same options as WWW::Kickstarter's C<L<projects>>.
+It accepts the same options as L<C<projects>|/projects>.
 
 
 =head2 projects_ending_soon
@@ -865,7 +897,7 @@ It accepts the same options as WWW::Kickstarter's C<L<projects>>.
 
 Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns projects ending soon as L<WWW::Kickstarter::Project> objects. The project closest to its deadline is returned first.
 
-It accepts the same options as WWW::Kickstarter's C<L<projects>>.
+It accepts the same options as L<C<projects>|/projects>.
 
 
 =head2 projects_recently_launched
@@ -874,7 +906,7 @@ It accepts the same options as WWW::Kickstarter's C<L<projects>>.
 
 Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns recently launched projects as L<WWW::Kickstarter::Project> objects. The recently launched project is returned first.
 
-It accepts the same options as WWW::Kickstarter's C<L<projects>>.
+It accepts the same options as L<C<projects>|/projects>.
 
 
 =head2 popular_projects
@@ -883,7 +915,7 @@ It accepts the same options as WWW::Kickstarter's C<L<projects>>.
 
 Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns popular projects as L<WWW::Kickstarter::Project> objects.
 
-It accepts the same options as WWW::Kickstarter's C<L<projects>>.
+It accepts the same options as L<C<projects>|/projects>.
 
 
 =head2 category
@@ -894,7 +926,9 @@ It accepts the same options as WWW::Kickstarter's C<L<projects>>.
 
 Fetches and returns the specified category as a L<WWW::Kickstarter::Category> object.
 
-The argument may be the category's numerical id (as returned by C<< $category->id >>), its "slug" (as returned by C<< $category->slug >>) or its name (as returned by C<< $category->name >>).
+The argument may be the category's numerical id (as returned by L<C<< $category->id >>|WWW::Kickstarter::Category/id>),
+its "slug" (as returned by L<C<< $category->slug >>|WWW::Kickstarter::Category/slug>) or
+its name (as returned by L<C<< $category->name >>|WWW::Kickstarter::Category/name>).
 
 
 =head2 categories
@@ -912,9 +946,11 @@ Fetches and returns all the categories as a L<WWW::Kickstarter::Categories> obje
 
 Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns projects in the specified category as L<WWW::Kickstarter::Project> objects.
 
-The argument may be the category's numerical id (as returned by C<< $category->id >>), its "slug" (as returned by C<< $category->slug >>) or its name (as returned by C<< $category->name >>).
+The argument may be the category's numerical id (as returned by L<C<< $category->id >>|WWW::Kickstarter::Category/id>),
+its "slug" (as returned by L<C<< $category->slug >>|WWW::Kickstarter::Category/slug>) or
+its name (as returned by L<C<< $category->name >>|WWW::Kickstarter::Category/name>).
 
-It accepts the same options as WWW::Kickstarter's C<project>.
+It accepts the same options as L<C<projects>|/projects>.
 
 
 =head2 category_projects_recommended
@@ -925,9 +961,11 @@ It accepts the same options as WWW::Kickstarter's C<project>.
 
 Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns the recommended projects in the specified category as L<WWW::Kickstarter::Project> objects.
 
-The argument may be the category's numerical id (as returned by C<< $category->id >>), its "slug" (as returned by C<< $category->slug >>) or its name (as returned by C<< $category->name >>).
+The argument may be the category's numerical id (as returned by L<C<< $category->id >>|WWW::Kickstarter::Category/id>),
+its "slug" (as returned by L<C<< $category->slug >>|WWW::Kickstarter::Category/slug>) or
+its name (as returned by L<C<< $category->name >>|WWW::Kickstarter::Category/name>).
 
-It accepts the same options as WWW::Kickstarter's C<L<projects>>.
+It accepts the same options as L<C<projects>|/projects>.
 
 
 =head1 ERROR REPORTING

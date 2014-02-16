@@ -89,7 +89,7 @@ Returns the numerical id of the project.
 
    my $project_slug = $project->slug;
 
-Returns creator-selected text id of the project, or undef if it doesn't have one.
+Returns creator-selected keyword id of the project, or undef if it doesn't have one.
 
 
 =head2 name
@@ -117,14 +117,14 @@ Returns a short plain-text description of the project.
 
    my $project_launched_at = $project->launched_at;
 
-Returns the epoch timestamp (as returned by C<L<perlfunc/time>>) of the project's launch.
+Returns the epoch timestamp (as returned by L<C<time>|perlfunc/time>) of the project's launch.
 
 
 =head2 deadline
 
    my $project_deadline = $project->deadline;
 
-Returns the epoch timestamp (as returned by C<L<perlfunc/time>>) of the project's deadline.
+Returns the epoch timestamp (as returned by L<C<time>|perlfunc/time>) of the project's deadline.
 
 
 =head2 backers_count
@@ -175,14 +175,14 @@ Returns the name of the category of the project.
 
    my $project_progress = $project->progress;
 
-Returns the progress towards the project's goal. E<gt>= 1.00: Goal reached.
+Returns the progress towards the project's goal. For example, a value greater than or equal to 1.00 indicates the goal was reached.
 
 
 =head2 progress_pct
 
    my $project_progress_pct = $project->progress_pct;
 
-Returns the progress towards the project's goal as a percent. E<gt>= 100: Goal reached.
+Returns the progress towards the project's goal as a percent. For example, a value greater than or equal to 100 indicates the goal was reached
 
 
 =head1 API CALLS

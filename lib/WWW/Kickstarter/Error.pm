@@ -111,12 +111,14 @@ without relying on matching the exact text of the message.
    my $error = WWW::Kickstarter::Error->new($message);
 
 Creates an WWW::Kickstarter::Error object from the specified C<$code> and C<$message>.
-See C<L<code>> for acceptable values for C<$code>.
+See L<C<code>|/code> for acceptable values for C<$code>.
 
 If C<$message> is an WWW::Kickstarter::Error object, it is simply returned.
 
 
 =head1 SUBROUTINES
+
+=head2 my_croak
 
    my_croak($code, $message);
 
@@ -129,7 +131,7 @@ Creates a WWW::Kickstarter::Error object from the arguments and throws it as an 
 
    my $code = $error->code();
 
-The C<$code> passed to C<my_croak> or the constructor.
+The C<$code> passed to L<C<my_croak>|/my_croak> or L<the constructor|/new>.
 
 One of the following:
 
@@ -158,7 +160,7 @@ A communication error or an unrecognized response.
 
    my $message = $error->message();
 
-The C<$message> passed to C<my_croak> or the constructor.
+The C<$message> passed to L<C<my_croak>|/my_croak> or L<the constructor|/new>.
 
 
 =head2 as_string

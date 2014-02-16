@@ -92,7 +92,7 @@ Returns the numerical id of the category.
 
    my $category_slug = $category->slug;
 
-Returns the text id of the category.
+Returns the keyword id of the category.
 
 
 =head2 name
@@ -127,9 +127,7 @@ Refetches the category from Kickstarter.
 
 Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns projects in the specified category as L<WWW::Kickstarter::Project> objects.
 
-The argument may be the category's numerical id (as returned by C<< $category->id >>), its "slug" (as returned by C<< $category->slug >>) or its name (as returned by C<< $category->name >>).
-
-It accepts the same options as WWW::Kickstarter's C<L<WWW::Kickstarter/projects>>.
+It accepts the same options as L<WWW::Kickstarter's C<projects>|WWW::Kickstarter/projects>.
 
 
 =head2 projects_recommended
@@ -138,9 +136,7 @@ It accepts the same options as WWW::Kickstarter's C<L<WWW::Kickstarter/projects>
 
 Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns the recommended projects in the specified category as L<WWW::Kickstarter::Project> objects.
 
-The argument may be the category's numerical id (as returned by C<< $category->id >>), its "slug" (as returned by C<< $category->slug >>) or its name (as returned by C<< $category->name >>).
-
-It accepts the same options as WWW::Kickstarter's C<L<WWW::Kickstarter/projects>>.
+It accepts the same options as L<WWW::Kickstarter's C<projects>|WWW::Kickstarter/projects>.
 
 
 =head1 VERSION, BUGS, KNOWN ISSUES, SUPPORT, AUTHORS, COPYRIGHT & LICENSE
