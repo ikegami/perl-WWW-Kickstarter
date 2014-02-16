@@ -1,16 +1,16 @@
 
-package WWW::Kickstarter::Category;
+package WWW::Kickstarter::Data::Category;
 
 use strict;
 use warnings;
 no autovivification;
 
 
-use WWW::Kickstarter::Error  qw( my_croak );
-use WWW::Kickstarter::Object qw( );
+use WWW::Kickstarter::Data  qw( );
+use WWW::Kickstarter::Error qw( my_croak );
 
 
-our @ISA = 'WWW::Kickstarter::Object';
+our @ISA = 'WWW::Kickstarter::Data';
 
 
 sub _new {
@@ -57,7 +57,7 @@ __END__
 
 =head1 NAME
 
-WWW::Kickstarter::Category - Kickstarter category data
+WWW::Kickstarter::Data::Category - Kickstarter category data
 
 
 =head1 SYNOPSIS
@@ -106,10 +106,10 @@ Returns the category's name.
 
    my @categories = $category->subcategories;
 
-Returns the subcategories of this category as L<WWW::Kickstarter::Category> objects.
+Returns the subcategories of this category as L<WWW::Kickstarter::Data::Category> objects.
 
 This information is only evailable if this object was obtained (directly or indirectly)
-from a L<WWW::Kickstarter::Categories> object. An exception will be thrown otherwise.
+from a L<WWW::Kickstarter::Data::Categories> object. An exception will be thrown otherwise.
 
 
 =head1 API CALLS
@@ -125,7 +125,7 @@ Refetches the category from Kickstarter.
 
    my $projects_iter = $category->projects(%opts);
 
-Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns projects in the specified category as L<WWW::Kickstarter::Project> objects.
+Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns projects in the specified category as L<WWW::Kickstarter::Data::Project> objects.
 
 It accepts the same options as L<WWW::Kickstarter's C<projects>|WWW::Kickstarter/projects>.
 
@@ -134,7 +134,7 @@ It accepts the same options as L<WWW::Kickstarter's C<projects>|WWW::Kickstarter
 
    my $projects_iter = $category->projects_recommended(%opts);
 
-Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns the recommended projects in the specified category as L<WWW::Kickstarter::Project> objects.
+Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns the recommended projects in the specified category as L<WWW::Kickstarter::Data::Project> objects.
 
 It accepts the same options as L<WWW::Kickstarter's C<projects>|WWW::Kickstarter/projects>.
 

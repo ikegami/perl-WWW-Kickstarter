@@ -8,18 +8,18 @@ no autovivification;
 use version; our $VERSION = qv('v0.9.0');
 
 
-use Time::HiRes                        qw( );
-use URI                                qw( );
-use URI::QueryParam                    qw( );
-use URI::Escape                        qw( uri_escape_utf8 );
-use WWW::Kickstarter::Categories       qw( );
-use WWW::Kickstarter::Category         qw( );
-use WWW::Kickstarter::Error            qw( my_croak );
-use WWW::Kickstarter::Iterator         qw( );
-use WWW::Kickstarter::NotificationPref qw( );
-use WWW::Kickstarter::Project          qw( );
-use WWW::Kickstarter::User             qw( );
-use WWW::Kickstarter::User::Myself     qw( );
+use Time::HiRes                              qw( );
+use URI                                      qw( );
+use URI::QueryParam                          qw( );
+use URI::Escape                              qw( uri_escape_utf8 );
+use WWW::Kickstarter::Data::Categories       qw( );
+use WWW::Kickstarter::Data::Category         qw( );
+use WWW::Kickstarter::Data::NotificationPref qw( );
+use WWW::Kickstarter::Data::Project          qw( );
+use WWW::Kickstarter::Data::User             qw( );
+use WWW::Kickstarter::Data::User::Myself     qw( );
+use WWW::Kickstarter::Error                  qw( my_croak );
+use WWW::Kickstarter::Iterator               qw( );
 
 
 # ---
@@ -184,9 +184,9 @@ sub _http_request {
 
 
 my %ks_iterator_name_by_class = (
-    'WWW::Kickstarter::Category' => 'categories',
-    'WWW::Kickstarter::Project'  => 'projects',
-    'WWW::Kickstarter::User'     => 'users',
+    'WWW::Kickstarter::Data::Category' => 'categories',
+    'WWW::Kickstarter::Data::Project'  => 'projects',
+    'WWW::Kickstarter::Data::User'     => 'users',
 );
 
 sub _call_api {
@@ -226,7 +226,7 @@ sub _call_api {
    $url = URI->new('https://api.kickstarter.com/v1/' . $url);
    $url->query_param_append(oauth_token => $access_token);
 
-   $class = 'WWW::Kickstarter::' . $class;
+   $class = 'WWW::Kickstarter::Data::' . $class;
 
    if ($call_type eq 'single') {
       my $response = $self->_http_request(GET => $url);
@@ -316,7 +316,7 @@ sub login {
    my $user_data = $response->{user}
       or my_croak(500, "Error parsing response: Missing user data");
 
-   my $myself = WWW::Kickstarter::User::Myself->_new($self, $user_data);
+   my $myself = WWW::Kickstarter::Data::User::Myself->_new($self, $user_data);
 
    $self->{my_id} = $myself->id;
 
@@ -504,7 +504,7 @@ sub category {
 sub categories {
    my $self = shift;
    my $iter = $self->_call_api('categories', 'iterator', 'Category');
-   return WWW::Kickstarter::Categories->_new($self, [ $iter->get_rest() ]);
+   return WWW::Kickstarter::Data::Categories->_new($self, [ $iter->get_rest() ]);
 }
 
 sub category_projects {
@@ -625,21 +625,21 @@ Returns the id of the logged-in user.
 
 You must login using your standard Kickstarter credentials before you can query the API.
 
-Returns a L<WWW::Kickstarter::User::Myself> object for the user that logged in.
+Returns a L<WWW::Kickstarter::Data::User::Myself> object for the user that logged in.
 
 
 =head2 myself
 
    my $myself = $ks->myself();
 
-Fetches and returns the logged-in user as a L<WWW::Kickstarter::User::Myself> object.
+Fetches and returns the logged-in user as a L<WWW::Kickstarter::Data::User::Myself> object.
 
 
 =head2 my_notification_prefs
 
    my @notification_prefs = $ks->my_notification_prefs();
 
-Fetches and returns the the logged-in user's notification preferences of backed projects as L<WWW::Kickstarter::NotificationPref> objects.
+Fetches and returns the the logged-in user's notification preferences of backed projects as L<WWW::Kickstarter::Data::NotificationPref> objects.
 The notification preferences for the project created last is returned first.
 
 
@@ -647,7 +647,7 @@ The notification preferences for the project created last is returned first.
 
    my @projects = $ks->my_projects_created();
 
-Fetches and returns the projects created by the logged-in user as L<WWW::Kickstarter::Project> objects.
+Fetches and returns the projects created by the logged-in user as L<WWW::Kickstarter::Data::Project> objects.
 The project created last is returned first.
 
 
@@ -655,7 +655,7 @@ The project created last is returned first.
 
    my $projects_iter = $ks->my_projects_backed(%opts);
 
-Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns the projects backed by the logged-in user as L<WWW::Kickstarter::Project> objects.
+Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns the projects backed by the logged-in user as L<WWW::Kickstarter::Data::Project> objects.
 The most recently backed project is returned first.
 
 Note that some projects may be returned twice. This happens when the data being queried changes while the results are being traversed.
@@ -675,7 +675,7 @@ If provided, the pages of results before the specified page number are skipped.
 
    my $projects_iter = $ks->my_projects_starred(%opts);
 
-Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns the projects starred by the logged-in user as L<WWW::Kickstarter::Project> objects.
+Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns the projects starred by the logged-in user as L<WWW::Kickstarter::Data::Project> objects.
 The most recently starred project is returned first.
 
 Note that some projects may be returned twice. This happens when the data being queried changes while the results are being traversed.
@@ -695,18 +695,18 @@ If provided, the pages of results before the specified page number are skipped.
 
    my $user = $ks->user($user_id);
 
-Fetches and returns the specified user as a L<WWW::Kickstarter::User> object.
+Fetches and returns the specified user as a L<WWW::Kickstarter::Data::User> object.
 
-Note that the argument must be the user's numerical id (as returned by L<C<< $user->id >>|WWW::Kickstarter::User/id>).
+Note that the argument must be the user's numerical id (as returned by L<C<< $user->id >>|WWW::Kickstarter::Data::User/id>).
 
 
 =head2 user_projects_created
 
    my @projects = $ks->user_projects_created($user_id);
 
-Fetches and returns the projects created by the specified user as L<WWW::Kickstarter::Project> objects. The project created last is returned first.
+Fetches and returns the projects created by the specified user as L<WWW::Kickstarter::Data::Project> objects. The project created last is returned first.
 
-Note that the argument must be the user's numerical id (as returned by L<C<< $user->id >>|WWW::Kickstarter::User/id>).
+Note that the argument must be the user's numerical id (as returned by L<C<< $user->id >>|WWW::Kickstarter::Data::User/id>).
 
 
 =head2 project
@@ -714,17 +714,17 @@ Note that the argument must be the user's numerical id (as returned by L<C<< $us
    my $project = $ks->project($project_id);
    my $project = $ks->project($project_slug);
 
-Fetches and returns the specified project as a L<WWW::Kickstarter::Project> object.
+Fetches and returns the specified project as a L<WWW::Kickstarter::Data::Project> object.
 
-The argument may be the project's numerical id (as returned by L<C<< $project->id >>|WWW::Kickstarter::Project/id>) or
-its "slug" (as returned by L<C<< $project->slug >>|WWW::Kickstarter::Project/slug>).
+The argument may be the project's numerical id (as returned by L<C<< $project->id >>|WWW::Kickstarter::Data::Project/id>) or
+its "slug" (as returned by L<C<< $project->slug >>|WWW::Kickstarter::Data::Project/slug>).
 
 
 =head2 projects
 
    my $projects_iter = $ks->projects(%opts);
 
-Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns all Kickstarter projects as L<WWW::Kickstarter::Project> objects.
+Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns all Kickstarter projects as L<WWW::Kickstarter::Data::Project> objects.
 
 Note that some projects may be returned twice, and some might be skipped. This happens when the data being queried changes while the results are being traversed.
 
@@ -886,7 +886,7 @@ This list was obtained from L<Kickstarter's Advanced Discover page|https://www.k
 
    my $projects_iter = $ks->projects_recommended(%opts);
 
-Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns recommended projects as L<WWW::Kickstarter::Project> objects.
+Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns recommended projects as L<WWW::Kickstarter::Data::Project> objects.
 
 It accepts the same options as L<C<projects>|/projects>.
 
@@ -895,7 +895,7 @@ It accepts the same options as L<C<projects>|/projects>.
 
    my $projects_iter = $ks->projects_ending_soon(%opts);
 
-Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns projects ending soon as L<WWW::Kickstarter::Project> objects. The project closest to its deadline is returned first.
+Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns projects ending soon as L<WWW::Kickstarter::Data::Project> objects. The project closest to its deadline is returned first.
 
 It accepts the same options as L<C<projects>|/projects>.
 
@@ -904,7 +904,7 @@ It accepts the same options as L<C<projects>|/projects>.
 
    my $projects_iter = $ks->projects_recently_launched(%opts);
 
-Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns recently launched projects as L<WWW::Kickstarter::Project> objects. The recently launched project is returned first.
+Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns recently launched projects as L<WWW::Kickstarter::Data::Project> objects. The recently launched project is returned first.
 
 It accepts the same options as L<C<projects>|/projects>.
 
@@ -913,7 +913,7 @@ It accepts the same options as L<C<projects>|/projects>.
 
    my $projects_iter = $ks->popular_projects(%opts);
 
-Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns popular projects as L<WWW::Kickstarter::Project> objects.
+Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns popular projects as L<WWW::Kickstarter::Data::Project> objects.
 
 It accepts the same options as L<C<projects>|/projects>.
 
@@ -924,18 +924,18 @@ It accepts the same options as L<C<projects>|/projects>.
    my $category = $ks->category($category_slug);
    my $category = $ks->category($category_name);
 
-Fetches and returns the specified category as a L<WWW::Kickstarter::Category> object.
+Fetches and returns the specified category as a L<WWW::Kickstarter::Data::Category> object.
 
-The argument may be the category's numerical id (as returned by L<C<< $category->id >>|WWW::Kickstarter::Category/id>),
-its "slug" (as returned by L<C<< $category->slug >>|WWW::Kickstarter::Category/slug>) or
-its name (as returned by L<C<< $category->name >>|WWW::Kickstarter::Category/name>).
+The argument may be the category's numerical id (as returned by L<C<< $category->id >>|WWW::Kickstarter::Data::Category/id>),
+its "slug" (as returned by L<C<< $category->slug >>|WWW::Kickstarter::Data::Category/slug>) or
+its name (as returned by L<C<< $category->name >>|WWW::Kickstarter::Data::Category/name>).
 
 
 =head2 categories
 
     my $categories = $ks->categories();
 
-Fetches and returns all the categories as a L<WWW::Kickstarter::Categories> object.
+Fetches and returns all the categories as a L<WWW::Kickstarter::Data::Categories> object.
 
 
 =head2 category_projects
@@ -944,11 +944,11 @@ Fetches and returns all the categories as a L<WWW::Kickstarter::Categories> obje
    my $projects_iter = $ks->category_projects($category_slug, %opts);
    my $projects_iter = $ks->category_projects($category_name, %opts);
 
-Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns projects in the specified category as L<WWW::Kickstarter::Project> objects.
+Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns projects in the specified category as L<WWW::Kickstarter::Data::Project> objects.
 
-The argument may be the category's numerical id (as returned by L<C<< $category->id >>|WWW::Kickstarter::Category/id>),
-its "slug" (as returned by L<C<< $category->slug >>|WWW::Kickstarter::Category/slug>) or
-its name (as returned by L<C<< $category->name >>|WWW::Kickstarter::Category/name>).
+The argument may be the category's numerical id (as returned by L<C<< $category->id >>|WWW::Kickstarter::Data::Category/id>),
+its "slug" (as returned by L<C<< $category->slug >>|WWW::Kickstarter::Data::Category/slug>) or
+its name (as returned by L<C<< $category->name >>|WWW::Kickstarter::Data::Category/name>).
 
 It accepts the same options as L<C<projects>|/projects>.
 
@@ -959,11 +959,11 @@ It accepts the same options as L<C<projects>|/projects>.
    my $projects_iter = $ks->category_projects_recommended($category_slug, %opts);
    my $projects_iter = $ks->category_projects_recommended($category_name, %opts);
 
-Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns the recommended projects in the specified category as L<WWW::Kickstarter::Project> objects.
+Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns the recommended projects in the specified category as L<WWW::Kickstarter::Data::Project> objects.
 
-The argument may be the category's numerical id (as returned by L<C<< $category->id >>|WWW::Kickstarter::Category/id>),
-its "slug" (as returned by L<C<< $category->slug >>|WWW::Kickstarter::Category/slug>) or
-its name (as returned by L<C<< $category->name >>|WWW::Kickstarter::Category/name>).
+The argument may be the category's numerical id (as returned by L<C<< $category->id >>|WWW::Kickstarter::Data::Category/id>),
+its "slug" (as returned by L<C<< $category->slug >>|WWW::Kickstarter::Data::Category/slug>) or
+its name (as returned by L<C<< $category->name >>|WWW::Kickstarter::Data::Category/name>).
 
 It accepts the same options as L<C<projects>|/projects>.
 

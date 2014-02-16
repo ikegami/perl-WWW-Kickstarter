@@ -6,18 +6,18 @@ use warnings;
 use Test::More tests => 12;
 
 BEGIN {
-   require_ok( 'WWW::Kickstarter'                     );
-   require_ok( 'WWW::Kickstarter::Categories'         );
-   require_ok( 'WWW::Kickstarter::Category'           );
-   require_ok( 'WWW::Kickstarter::Error'              );
-   require_ok( 'WWW::Kickstarter::HttpClient::Lwp'    );
-   require_ok( 'WWW::Kickstarter::Iterator'           );
-   require_ok( 'WWW::Kickstarter::JsonParser::JsonXs' );
-   require_ok( 'WWW::Kickstarter::NotificationPref'   );
-   require_ok( 'WWW::Kickstarter::Object'             );
-   require_ok( 'WWW::Kickstarter::Project'            );
-   require_ok( 'WWW::Kickstarter::User'               );
-   require_ok( 'WWW::Kickstarter::User::Myself'       );
+   require_ok( 'WWW::Kickstarter'                         );
+   require_ok( 'WWW::Kickstarter::Data'                   );
+   require_ok( 'WWW::Kickstarter::Data::Categories'       );
+   require_ok( 'WWW::Kickstarter::Data::Category'         );
+   require_ok( 'WWW::Kickstarter::Data::Project'          );
+   require_ok( 'WWW::Kickstarter::Data::NotificationPref' );
+   require_ok( 'WWW::Kickstarter::Data::User'             );
+   require_ok( 'WWW::Kickstarter::Data::User::Myself'     );
+   require_ok( 'WWW::Kickstarter::Error'                  );
+   require_ok( 'WWW::Kickstarter::HttpClient::Lwp'        );
+   require_ok( 'WWW::Kickstarter::Iterator'               );
+   require_ok( 'WWW::Kickstarter::JsonParser::JsonXs'     );
 }
 
 diag( "Testing WWW::Kickstarter $WWW::Kickstarter::VERSION" );

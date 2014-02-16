@@ -33,7 +33,7 @@ __END__
 
 =head1 NAME
 
-WWW::Kickstarter::JsonParser::JsonXS - JSON::XS connector for WWW::Kickstarter
+WWW::Kickstarter::JsonParser::JsonXs - JSON::XS connector for WWW::Kickstarter
 
 
 =head1 SYNOPSIS

@@ -1,15 +1,16 @@
 
-package WWW::Kickstarter::Categories;
+package WWW::Kickstarter::Data::Categories;
 
 use strict;
 use warnings;
 no autovivification;
 
 
+use WWW::Kickstarter::Data  qw( );
 use WWW::Kickstarter::Error qw( my_croak );
 
 
-our @ISA = 'WWW::Kickstarter::Object';
+our @ISA = 'WWW::Kickstarter::Data';
 
 
 sub _new {
@@ -102,7 +103,7 @@ __END__
 
 =head1 NAME
 
-WWW::Kickstarter::Categories - Kickstarter categories
+WWW::Kickstarter::Data::Categories - Kickstarter categories
 
 
 =head1 SYNOPSIS
@@ -128,12 +129,12 @@ WWW::Kickstarter::Categories - Kickstarter categories
 
 =head2 C<< my @categories = $categories->categories; >>
 
-Returns a L<WWW::Kickstarter::Category> object for each Kickstarter category.
+Returns a L<WWW::Kickstarter::Data::Category> object for each Kickstarter category.
 
 
 =head2 C<< my @categories = $categories->top_level_categories; >>
 
-Returns a L<WWW::Kickstarter::Category> object for each top-level Kickstarter category.
+Returns a L<WWW::Kickstarter::Data::Category> object for each top-level Kickstarter category.
 
 
 =head1 API CALLS
@@ -166,7 +167,7 @@ The visitor is called with the following arguments:
 
 =item * C<$category>
 
-A category as an L<WWW::Kickstarter::Category> object.
+A category as an L<WWW::Kickstarter::Data::Category> object.
 
 =item * C<$depth>
 

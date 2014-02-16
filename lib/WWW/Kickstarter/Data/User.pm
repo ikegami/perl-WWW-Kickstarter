@@ -1,15 +1,15 @@
 
-package WWW::Kickstarter::User;
+package WWW::Kickstarter::Data::User;
 
 use strict;
 use warnings;
 no autovivification;
 
 
-use WWW::Kickstarter::Object qw( );
+use WWW::Kickstarter::Data qw( );
 
 
-our @ISA = 'WWW::Kickstarter::Object';
+our @ISA = 'WWW::Kickstarter::Data';
 
 
 sub id   { $_[0]{id} }
@@ -28,7 +28,7 @@ __END__
 
 =head1 NAME
 
-WWW::Kickstarter::User - Kickstarter user data
+WWW::Kickstarter::Data::User - Kickstarter user data
 
 
 =head1 SYNOPSIS
@@ -83,7 +83,7 @@ Refetches this user from Kickstarter.
 
    my @projects = $user->projects_created();
 
-Fetches and returns the projects created by the specified user as L<WWW::Kickstarter::Project> objects. The project created last is returned first.
+Fetches and returns the projects created by the specified user as L<WWW::Kickstarter::Data::Project> objects. The project created last is returned first.
 
 
 =head1 VERSION, BUGS, KNOWN ISSUES, SUPPORT, AUTHORS, COPYRIGHT & LICENSE

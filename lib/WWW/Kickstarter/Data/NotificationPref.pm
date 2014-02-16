@@ -1,15 +1,15 @@
 
-package WWW::Kickstarter::NotificationPref;
+package WWW::Kickstarter::Data::NotificationPref;
 
 use strict;
 use warnings;
 no autovivification;
 
 
-use WWW::Kickstarter::Object qw( );
+use WWW::Kickstarter::Data qw( );
 
 
-our @ISA = 'WWW::Kickstarter::Object';
+our @ISA = 'WWW::Kickstarter::Data';
 
 
 sub id               { $_[0]{id} }
@@ -26,7 +26,7 @@ __END__
 
 =head1 NAME
 
-WWW::Kickstarter::NotificationPref - Notification preferences for projects you backed
+WWW::Kickstarter::Data::NotificationPref - Notification preferences for projects you backed
 
 
 =head1 SYNOPSIS

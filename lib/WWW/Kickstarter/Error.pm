@@ -21,17 +21,17 @@ $Carp::CarpInternal{ (__PACKAGE__) } = 1;
 {
    my @pkgs = qw(
       WWW::Kickstarter
-      WWW::Kickstarter::Categories
-      WWW::Kickstarter::Category
+      WWW::Kickstarter::Data
+      WWW::Kickstarter::Data::Categories
+      WWW::Kickstarter::Data::Category
+      WWW::Kickstarter::Data::NotificationPref
+      WWW::Kickstarter::Data::Project
+      WWW::Kickstarter::Data::User
+      WWW::Kickstarter::Data::User::Myself
       WWW::Kickstarter::Error
       WWW::Kickstarter::HttpClient::Lwp
       WWW::Kickstarter::Iterator
-      WWW::Kickstarter::JsonParser::JsonXS
-      WWW::Kickstarter::NotificationPref
-      WWW::Kickstarter::Object
-      WWW::Kickstarter::Project
-      WWW::Kickstarter::User
-      WWW::Kickstarter::User::Myself
+      WWW::Kickstarter::JsonParser::JsonXs
    );
 
    my $code = join '', map "package $_; our \@CARP_NOT = \@pkgs;\n", @pkgs;

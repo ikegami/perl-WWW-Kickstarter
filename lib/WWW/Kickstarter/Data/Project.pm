@@ -1,16 +1,16 @@
 
-package WWW::Kickstarter::Project;
+package WWW::Kickstarter::Data::Project;
 
 use strict;
 use warnings;
 no autovivification;
 
 
-use WWW::Kickstarter::Object qw( );
-use WWW::Kickstarter::User   qw( );
+use WWW::Kickstarter::Data       qw( );
+use WWW::Kickstarter::Data::User qw( );
 
 
-our @ISA = 'WWW::Kickstarter::Object';
+our @ISA = 'WWW::Kickstarter::Data';
 
 
 sub _new {
@@ -22,7 +22,7 @@ sub _new {
    }
 
    my $self = $class->SUPER::_new($ks, $data);
-   $self->{creator} = WWW::Kickstarter::User->_new($ks, $self->{creator}) if exists($self->{creator});
+   $self->{creator} = WWW::Kickstarter::Data::User->_new($ks, $self->{creator}) if exists($self->{creator});
 
    return $self;
 }
@@ -57,7 +57,7 @@ __END__
 
 =head1 NAME
 
-WWW::Kickstarter::Project - Kickstarter project data
+WWW::Kickstarter::Data::Project - Kickstarter project data
 
 
 =head1 SYNOPSIS
@@ -152,7 +152,7 @@ Returns the amount of USD that has been pledged to the project.
 
    my $user = $project->creator;
 
-Returns the creator of the project as an L<WWW::Kickstarter::User> object.
+Returns the creator of the project as an L<WWW::Kickstarter::Data::User> object.
 
 Some data will not available without a refetch.
 

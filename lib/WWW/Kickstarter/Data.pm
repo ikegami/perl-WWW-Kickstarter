@@ -1,5 +1,5 @@
 
-package WWW::Kickstarter::Object;
+package WWW::Kickstarter::Data;
 
 use strict;
 use warnings;
@@ -34,7 +34,7 @@ __END__
 
 =head1 NAME
 
-WWW::Kickstarter::Object - Base class for Kickstarter data classes.
+WWW::Kickstarter::Data - Base class for Kickstarter data classes.
 
 
 =head1 DESCRIPTION
