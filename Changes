@@ -1,6 +1,7 @@
 Revision history for WWW-Kickstarter
 
 1.2.0   ~~~~-~~-~~
+        - Urls to fetch projects were being built incorrectly.
         - ~~~
 
 1.0.0   2014-02-15

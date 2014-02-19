@@ -370,23 +370,20 @@ sub _projects {
    $form{raised} =~ /^(?:all|[012])\z/
       or my_croak(400, "Unrecognized value for raised. Valid: all, 0, 1, 2");
 
-   my @query_params;
-   push @query_params, category_id => $form{category} if length($form{category});
-   push @query_params, woe_id      => $form{location} if length($form{location});
-   push @query_params, sort        => $form{sort}     if $form{sort} ne 'magic';
-   push @query_params, term        => $form{q}        if length($form{q});
-   push @query_params, backed      => '1'             if $form{backed_by_self};
-   push @query_params, starred     => '1'             if $form{starred_by_self};
-   push @query_params, social      => '1'             if $form{backed_by_friends};
-   push @query_params, staff_picks => '1'             if $form{picked_by_staff};
-   push @query_params, state       => $form{state}    if $form{state}   ne 'all';
-   push @query_params, pledged     => $form{pledged}  if $form{pledged} ne 'all';
-   push @query_params, goal        => $form{goal}     if $form{goal}    ne 'all';
-   push @query_params, raised      => $form{raised}   if $form{raised}  ne 'all';
-   push @query_params, tag_id      => $form{tag}      if length($form{tag});
-
    my $url = URI->new('discover', 'http');
-   $url->query_param_append(@query_params);
+   $url->query_param_append( category_id => $form{category} ) if length($form{category});
+   $url->query_param_append( woe_id      => $form{location} ) if length($form{location});
+   $url->query_param_append( sort        => $form{sort}     ) if $form{sort} ne 'magic';
+   $url->query_param_append( term        => $form{q}        ) if length($form{q});
+   $url->query_param_append( backed      => '1'             ) if $form{backed_by_self};
+   $url->query_param_append( starred     => '1'             ) if $form{starred_by_self};
+   $url->query_param_append( social      => '1'             ) if $form{backed_by_friends};
+   $url->query_param_append( staff_picks => '1'             ) if $form{picked_by_staff};
+   $url->query_param_append( state       => $form{state}    ) if $form{state}   ne 'all';
+   $url->query_param_append( pledged     => $form{pledged}  ) if $form{pledged} ne 'all';
+   $url->query_param_append( goal        => $form{goal}     ) if $form{goal}    ne 'all';
+   $url->query_param_append( raised      => $form{raised}   ) if $form{raised}  ne 'all';
+   $url->query_param_append( tag_id      => $form{tag}      ) if length($form{tag});
 
    return $self->_call_api($url, [ 'iterator', cursor_style=>'page' ], 'Project', %opts);
 }
