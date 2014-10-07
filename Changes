@@ -4,6 +4,9 @@ Revision history for WWW-Kickstarter
         - Always round progress down to avoid saying a project is 100% funded before it is.
         - $project->goal and $project->pledged aren't in USD as documented.
           Fixed the documentation and added $project->currency.
+        - Kickstarter's "launch_date" sort order changed. It now sorts by ascending launch date.
+          Use sort order "newest" to projects sorted by descending launch date.
+          $ks->projects_recently_launched was adjusted to return the newest first again.
         - ~~~
 
 1.2.0   2014-02-18

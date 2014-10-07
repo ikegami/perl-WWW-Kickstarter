@@ -334,7 +334,7 @@ sub _projects {
    for my $field_name (
       'category',           # Category's "id", "slug" or "name".
       'location',           # Location as a "Where on Earth Identifier" ("WOEID")
-      'sort',               # 'magic' (default), 'end_date', 'launch_date', 'popularity', 'most_funded'
+      'sort',               # 'magic' (default), 'end_date', 'newest', 'launch_date', 'popularity', 'most_funded'
       'q',                  # Search terms
       'backed_by_self',     # Boolean
       'starred_by_self',    # Boolean
@@ -359,8 +359,8 @@ sub _projects {
    $form{raised}   = 'all'   if !defined($form{raised})      || !length($form{raised});
    $form{tag}      = ''      if !defined($form{tag});
 
-   $form{sort} =~ /^(?:magic|end_date|launch_date|popularity|most_funded)\z/
-      or my_croak(400, "Unrecognized value for sort. Valid: magic, end_date, launch_date, popularity, most_funded");
+   $form{sort} =~ /^(?:magic|end_date|newest|launch_date|popularity|most_funded)\z/
+      or my_croak(400, "Unrecognized value for sort. Valid: magic, end_date, newest, launch_date, popularity, most_funded");
    $form{state} =~ /^(?:all|live|successful)\z/
       or my_croak(400, "Unrecognized value for state. Valid: all, live, successful");
    $form{pledged} =~ /^(?:all|[0123])\z/
@@ -483,7 +483,7 @@ sub projects_ending_soon {
 
 sub projects_recently_launched {
    my $self = shift;
-   return $self->_projects({ state => 'live', sort => 'launch_date' }, @_);
+   return $self->_projects({ state => 'live', sort => 'newest' }, @_);
 }
 
 sub popular_projects {
@@ -749,6 +749,8 @@ Limits the projects returned to those associated with the specified location.
 
 =item * C<< sort => 'end_date' >>
 
+=item * C<< sort => 'newest' >>
+
 =item * C<< sort => 'launch_date' >>
 
 =item * C<< sort => 'popularity' >>
@@ -901,7 +903,7 @@ It accepts the same options as L<C<projects>|/projects>.
 
    my $projects_iter = $ks->projects_recently_launched(%opts);
 
-Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns recently launched projects as L<WWW::Kickstarter::Data::Project> objects. The recently launched project is returned first.
+Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns recently launched projects as L<WWW::Kickstarter::Data::Project> objects. The most recently launched project is returned first.
 
 It accepts the same options as L<C<projects>|/projects>.
 
