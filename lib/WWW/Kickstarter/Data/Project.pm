@@ -44,7 +44,7 @@ sub category_id   { $_[0]{category}{id} }
 sub category_name { $_[0]{category}{name} }
 
 sub progress      { $_[0]{pledged} / $_[0]{goal} }
-sub progress_pct  { sprintf "%.0f", $_[0]{pledged} / $_[0]{goal} * 100 }
+sub progress_pct  { int( $_[0]{pledged} / $_[0]{goal} * 100 ) }
 
 
 sub refetch { my $self = shift;  return $self->ks->project($self->id, @_); }
