@@ -2,6 +2,8 @@ Revision history for WWW-Kickstarter
 
 1.4.0   ~~~~-~~-~~
         - Always round progress down to avoid saying a project is 100% funded before it is.
+        - $project->goal and $project->pledged aren't in USD as documented.
+          Fixed the documentation and added $project->currency.
         - ~~~
 
 1.2.0   2014-02-18
