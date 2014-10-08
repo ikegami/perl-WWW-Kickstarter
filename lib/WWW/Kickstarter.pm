@@ -845,9 +845,9 @@ I don't know of an API endpoint that returns a list of available tags. The follo
 
 =over
 
-=item * Arctic (id: 39, slug: arctic)
-
 =item * Bikes (id: 50, slug: bikes)
+
+=item * Burning Man (id: 34, slug: burning-man)
 
 =item * Cats (id: 31, slug: cats)
 
@@ -855,7 +855,11 @@ I don't know of an API endpoint that returns a list of available tags. The follo
 
 =item * Cthulhu (id: 38, slug: cthulhu)
 
+=item * Fringe (id: 99, slug: fringe)
+
 =item * Library (id: 46, slug: library)
+
+=item * LOL (id: 105, slug: lol)
 
 =item * Maps (id: 48, slug: maps)
 
@@ -867,17 +871,33 @@ I don't know of an API endpoint that returns a list of available tags. The follo
 
 =item * Robots (id: 41, slug: robots)
 
-=item * RPG (id: 33, slug: rpg)
-
 =item * Science (id: 19, slug: science)
 
+=item * Space is the Place (id: 107, slug: space-is-the-place)
+
+=item * World Maker Faire 2014 (id: 106, slug: world-maker-faire-2014)
+
+=back
+
+The following are also tags that are known to exist, but these aren't shown on the website. It's possible they aren't actively used anymore.
+
+=over
+
+=item * Arctic (id: 39, slug: arctic)
+
+=item * Maker Faire (id: 87, slug: maker-faire)
+
+=item * RPG (id: 33, slug: rpg)
+
 =item * Space (id: 28, slug: space)
+
+=item * Sundance (id: 29, slug: sundance)
 
 =item * Zombies (id: 30, slug: zombies)
 
 =back
 
-This list was obtained from L<Kickstarter's Advanced Discover page|https://www.kickstarter.com/discover/advanced>.
+The first list was obtained from L<Kickstarter's Advanced Discover page|https://www.kickstarter.com/discover/advanced>. The second list was obtained through trial and error.
 
 =back
 
