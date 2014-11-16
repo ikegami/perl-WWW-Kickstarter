@@ -1011,7 +1011,7 @@ The following issues are known:
 
 =over
 
-=item * A lot of the data returned by the API has not been made available through accessors.
+=item * A lot of the data returned by the API has not been made available through accessors (though the data is available by accessing the object hash directly).
 
 =item * Some of the data that has not been available through accessors should be converted to objects (e.g. locations).
 
