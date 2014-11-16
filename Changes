@@ -6,6 +6,7 @@ Revision history for WWW-Kickstarter
         - Fixed bug in $ks->category_projects and $ks->category_projects_recommended.
         - Added $project->category.
         - Added support for reward data.
+        - Added support for location data.
         - ~~~
 
 1.4.0   2014-10-07

@@ -14,6 +14,7 @@ use URI::Escape                              qw( uri_escape_utf8 );
 use URI::QueryParam                          qw( );
 use WWW::Kickstarter::Data::Categories       qw( );
 use WWW::Kickstarter::Data::Category         qw( );
+use WWW::Kickstarter::Data::Location         qw( );
 use WWW::Kickstarter::Data::NotificationPref qw( );
 use WWW::Kickstarter::Data::Project          qw( );
 use WWW::Kickstarter::Data::Reward           qw( );
@@ -334,7 +335,7 @@ sub _projects {
    my %form;
    for my $field_name (
       'category',           # Category's "id", "slug" or "name".
-      'location',           # Location as a "Where on Earth Identifier" ("WOEID")
+      'location',           # Location's "id" (which is a "Where on Earth Identifier").
       'sort',               # 'magic' (default), 'end_date', 'newest', 'launch_date', 'popularity', 'most_funded'
       'q',                  # Search terms
       'backed_by_self',     # Boolean
@@ -497,6 +498,19 @@ sub projects_recently_launched {
 sub popular_projects {
    my $self = shift;
    return $self->_projects({ sort => 'popularity' }, @_);
+}
+
+sub location {
+   my_croak(400, "Incorrect usage") if @_ < 2;
+   my $self        = shift;
+   my $location_id = shift;  # From "id" field. Cannot be "slug".
+   return $self->_call_api('locations/'.uri_escape_utf8($location_id), [ 'single', recognize_404=>1 ], 'Location', @_);
+}
+
+sub projects_near_location {
+   my $self        = shift;
+   my $location_id = shift;  # From "id" field. Cannot be "slug".
+   return $self->_projects({ location => $location_id }, @_);
 }
 
 sub category {
@@ -956,6 +970,26 @@ Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns popul
 It accepts the same options as L<C<projects>|/projects>.
 
 
+=head2 location
+
+   my $location = $ks->location($location_id);
+
+Fetches and returns the specified location as a L<WWW::Kickstarter::Data::Location> object.
+
+Note that the argument must be the location's numerical id (as returned by L<C<< $location->id >>|WWW::Kickstarter::Data::Location/id>).
+
+
+=head2 projects_near_location
+
+   my $projects_iter = $ks->projects_near_location($location_id, %opts);
+
+Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns the projects near the specified location as L<WWW::Kickstarter::Data::Project> objects.
+
+The argument must be the location's id (as returned by L<C<< $location->id >>|WWW::Kickstarter::Data::Location/id>).
+
+It accepts the same options as L<C<projects>|/projects>.
+
+
 =head2 category
 
    my $category = $ks->category($category_id);
@@ -1031,8 +1065,6 @@ The following issues are known:
 =over
 
 =item * A lot of the data returned by the API has not been made available through accessors (though the data is available by accessing the object hash directly).
-
-=item * Some of the data that has not been available through accessors should be converted to objects (e.g. locations).
 
 =item * Some API calls may not have been made available.
 

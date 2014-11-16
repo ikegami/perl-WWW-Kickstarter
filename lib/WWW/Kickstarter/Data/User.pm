@@ -12,9 +12,25 @@ use WWW::Kickstarter::Data qw( );
 our @ISA = 'WWW::Kickstarter::Data';
 
 
-sub id   { $_[0]{id} }
-sub slug { $_[0]{slug} }
-sub name { $_[0]{name} }
+sub _new {
+   my_croak(400, "Incorrect usage") if @_ < 3;
+   my ($class, $ks, $data, %opts) = @_;
+
+   if (my @unrecognized = keys(%opts)) {
+      my_croak(400, "Unrecognized parameters @unrecognized");
+   }
+
+   my $self = $class->SUPER::_new($ks, $data);
+   $self->{location} = WWW::Kickstarter::Data::Location->_new($ks, $self->{location}) if exists($self->{location});
+
+   return $self;
+}
+
+
+sub id       { $_[0]{id} }
+sub slug     { $_[0]{slug} }
+sub name     { $_[0]{name} }
+sub location { $_[0]{location} }
 
 
 sub refetch          { my $self = shift;  return $self->ks->user($self->id, @_); }
@@ -68,6 +84,13 @@ Returns self-selected keyword id of the user, or undef if it's not available or 
    my $user_name = $user->name;
 
 Returns the user's name.
+
+
+=head2 location
+
+   my $location = $user->location;
+
+Returns the location of the user as an L<WWW::Kickstarter::Data::Location> object.
 
 
 =head1 API CALLS
