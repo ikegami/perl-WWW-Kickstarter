@@ -516,14 +516,14 @@ sub category_projects {
    my_croak(400, "Incorrect usage") if @_ < 2;
    my $self        = shift;
    my $category_id = shift;  # "id", "slug" or "name".
-   return $self->_projects({ category_id => $category_id }, @_);
+   return $self->_projects({ category => $category_id }, @_);
 }
 
 sub category_projects_recommended {
    my_croak(400, "Incorrect usage") if @_ < 2;
    my $self        = shift;
    my $category_id = shift;  # "id", "slug" or "name".
-   return $self->_projects({ category_id => $category_id, staff_picks => 1 }, @_);
+   return $self->_projects({ category => $category_id, staff_picks => 1 }, @_);
 }
 
 
