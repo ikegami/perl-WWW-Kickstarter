@@ -22,7 +22,8 @@ sub _new {
    }
 
    my $self = $class->SUPER::_new($ks, $data);
-   $self->{creator} = WWW::Kickstarter::Data::User->_new($ks, $self->{creator}) if exists($self->{creator});
+   $self->{creator } = WWW::Kickstarter::Data::User    ->_new($ks, $self->{creator }) if exists($self->{creator });
+   $self->{category} = WWW::Kickstarter::Data::Category->_new($ks, $self->{category}) if exists($self->{category});
 
    return $self;
 }
@@ -41,6 +42,7 @@ sub pledged       { $_[0]{pledged} }
 sub currency      { $_[0]{currency} }
 sub creator       { $_[0]{creator} }
 
+sub category      { $_[0]{category} }
 sub category_id   { $_[0]{category}{id} }
 sub category_name { $_[0]{category}{name} }
 
@@ -165,18 +167,29 @@ Returns the creator of the project as an L<WWW::Kickstarter::Data::User> object.
 Some data will not available without a refetch.
 
 
-=head2 category_id
+=head2 category
 
-   my $project_category_id = $project->category_id;
+   my $category = $project->category;
+
+Returns the category of the project as an L<WWW::Kickstarter::Data::Category> object.
+
+
+=head2 category_id (Deprecated)
+
+   my $category_id = $project->category_id;
 
 Returns the id of the category of the project.
 
+B<Deprecated>: Use C<< $project->category->id >> instead.
 
-=head2 category_name
 
-   my $project_category_name = $project->category_name;
+=head2 category_name (Deprecated)
+
+   my $category_name = $project->category_name;
 
 Returns the name of the category of the project.
+
+B<Deprecated>: Use C<< $project->category->name >> instead.
 
 
 =head2 progress
