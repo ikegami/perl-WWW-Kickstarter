@@ -4,6 +4,7 @@ Revision history for WWW-Kickstarter
         - $project->category_id is deprecated. Use $project->category->id instead.
         - $project->category_name is deprecated. Use $project->category->name instead.
         - Added $project->category.
+        - Added support for reward data.
         - ~~~
 
 1.4.0   2014-10-07

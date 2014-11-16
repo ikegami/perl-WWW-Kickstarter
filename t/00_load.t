@@ -3,15 +3,16 @@
 use strict;
 use warnings;
 
-use Test::More tests => 12;
+use Test::More tests => 13;
 
 BEGIN {
    require_ok( 'WWW::Kickstarter'                         );
    require_ok( 'WWW::Kickstarter::Data'                   );
    require_ok( 'WWW::Kickstarter::Data::Categories'       );
    require_ok( 'WWW::Kickstarter::Data::Category'         );
-   require_ok( 'WWW::Kickstarter::Data::Project'          );
    require_ok( 'WWW::Kickstarter::Data::NotificationPref' );
+   require_ok( 'WWW::Kickstarter::Data::Project'          );
+   require_ok( 'WWW::Kickstarter::Data::Reward'           );
    require_ok( 'WWW::Kickstarter::Data::User'             );
    require_ok( 'WWW::Kickstarter::Data::User::Myself'     );
    require_ok( 'WWW::Kickstarter::Error'                  );

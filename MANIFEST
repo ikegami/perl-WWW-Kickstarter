@@ -7,6 +7,7 @@ lib/WWW/Kickstarter/Data/Categories.pm
 lib/WWW/Kickstarter/Data/Category.pm
 lib/WWW/Kickstarter/Data/Project.pm
 lib/WWW/Kickstarter/Data/NotificationPref.pm
+lib/WWW/Kickstarter/Data/Reward.pm
 lib/WWW/Kickstarter/Data/User.pm
 lib/WWW/Kickstarter/Data/User/Myself.pm
 lib/WWW/Kickstarter/Error.pm

@@ -16,6 +16,7 @@ use WWW::Kickstarter::Data::Categories       qw( );
 use WWW::Kickstarter::Data::Category         qw( );
 use WWW::Kickstarter::Data::NotificationPref qw( );
 use WWW::Kickstarter::Data::Project          qw( );
+use WWW::Kickstarter::Data::Reward           qw( );
 use WWW::Kickstarter::Data::User             qw( );
 use WWW::Kickstarter::Data::User::Myself     qw( );
 use WWW::Kickstarter::Error                  qw( my_croak );
@@ -466,6 +467,13 @@ sub project {
    return $self->_call_api('projects/'.uri_escape_utf8($project_id), [ 'single', recognize_404=>1 ], 'Project', @_);
 }
 
+sub project_rewards {
+   my_croak(400, "Incorrect usage") if @_ < 2;
+   my $self       = shift;
+   my $project_id = shift;  # "id" or "slug".
+   return $self->_call_api('projects/'.uri_escape_utf8($project_id).'/rewards', [ 'list', recognize_404=>1 ], 'Reward', @_);
+}
+
 sub projects {
    my $self = shift;
    return $self->_projects({}, @_);
@@ -712,6 +720,17 @@ Note that the argument must be the user's numerical id (as returned by L<C<< $us
    my $project = $ks->project($project_slug);
 
 Fetches and returns the specified project as a L<WWW::Kickstarter::Data::Project> object.
+
+The argument may be the project's numerical id (as returned by L<C<< $project->id >>|WWW::Kickstarter::Data::Project/id>) or
+its "slug" (as returned by L<C<< $project->slug >>|WWW::Kickstarter::Data::Project/slug>).
+
+
+=head2 project_rewards
+
+   my @rewards = $ks->project_rewards($project_id);
+   my @rewards = $ks->project_rewards($project_slug);
+
+Fetches and returns the rewards of the specified project as L<WWW::Kickstarter::Data::Reward> objects.
 
 The argument may be the project's numerical id (as returned by L<C<< $project->id >>|WWW::Kickstarter::Data::Project/id>) or
 its "slug" (as returned by L<C<< $project->slug >>|WWW::Kickstarter::Data::Project/slug>).

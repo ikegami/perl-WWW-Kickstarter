@@ -25,6 +25,12 @@ sub _new {
    $self->{creator } = WWW::Kickstarter::Data::User    ->_new($ks, $self->{creator }) if exists($self->{creator });
    $self->{category} = WWW::Kickstarter::Data::Category->_new($ks, $self->{category}) if exists($self->{category});
 
+   if (exists($self->{rewards})) {
+      for my $reward (@{ $self->{rewards} }) {
+         $reward = WWW::Kickstarter::Data::Reward->_new($ks, $reward);
+      }
+   }
+
    return $self;
 }
 
@@ -51,6 +57,13 @@ sub progress_pct  { int( $_[0]{pledged} / $_[0]{goal} * 100 ) }
 
 
 sub refetch { my $self = shift;  return $self->ks->project($self->id, @_); }
+
+sub rewards {
+   my ($self, %opts) = @_;
+   my $force = delete($opts{force});
+   return @{ $self->{rewards} } if !$force && $self->{rewards};
+   return $self->ks->project_rewards($self->id, %opts);
+}
 
 
 1;
@@ -213,6 +226,20 @@ Returns the progress towards the project's goal as a percent. For example, a val
    $project = $project->refetch();
 
 Refetches this project from Kickstarter.
+
+
+=head2 rewards
+
+   my @rewards = $project->rewards();
+   my @rewards = $project->rewards( force => 1 );
+
+Returns the rewards of the specified project as L<WWW::Kickstarter::Data::Reward> objects.
+
+When fetching an individual project, Kickstarter includes "light" reward objects in its response.
+By default, these are the objects returned by this method.
+
+If these rewards objects are not available, or if C<< force => 1 >> is specified,
+the "full" reward objects will be fetched and returned.
 
 
 =head1 VERSION, BUGS, KNOWN ISSUES, SUPPORT, AUTHORS, COPYRIGHT & LICENSE
