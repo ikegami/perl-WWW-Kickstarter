@@ -1,13 +1,12 @@
 Revision history for WWW-Kickstarter
 
-1.6.0   ~~~~-~~-~~
+1.6.0   2014-11-16
         - $project->category_id is deprecated. Use $project->category->id instead.
         - $project->category_name is deprecated. Use $project->category->name instead.
         - Fixed bug in $ks->category_projects and $ks->category_projects_recommended.
         - Added $project->category.
         - Added support for reward data.
         - Added support for location data.
-        - ~~~
 
 1.4.0   2014-10-07
         - Always round progress down to avoid saying a project is 100% funded before it is.
