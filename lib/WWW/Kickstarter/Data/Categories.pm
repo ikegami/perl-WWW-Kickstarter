@@ -145,6 +145,8 @@ Returns a L<WWW::Kickstarter::Data::Category> object for each top-level Kickstar
 
 Refetches the categories from Kickstarter.
 
+This ensures the data is up to date, and it will populate fields that may not be provided by objects created by some API calls.
+
 
 =head1 METHODS
 

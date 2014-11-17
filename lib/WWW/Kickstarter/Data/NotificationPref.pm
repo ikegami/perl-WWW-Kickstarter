@@ -86,6 +86,11 @@ Returns true if the you wish to be notified of updates to the project identified
 Returns true if the you wish to be notified of updates to the project identified by C<project_id> by mobile.
 
 
+=head1 API CALLS
+
+None. Notably, this object can't be refetched.
+
+
 =head1 VERSION, BUGS, KNOWN ISSUES, SUPPORT, AUTHORS, COPYRIGHT & LICENSE
 
 See L<WWW::Kickstarter>

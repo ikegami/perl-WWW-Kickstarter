@@ -120,6 +120,8 @@ from a L<WWW::Kickstarter::Data::Categories> object. An exception will be thrown
 
 Refetches the category from Kickstarter.
 
+This ensures the data is up to date, and it will populate fields that may not be provided by objects created by some API calls.
+
 
 =head2 projects
 

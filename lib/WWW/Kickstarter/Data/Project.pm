@@ -234,6 +234,8 @@ B<Deprecated>: Use C<< $project->category->name >> instead.
 
 Refetches this project from Kickstarter.
 
+This ensures the data is up to date, and it will populate fields that may not be provided by objects created by some API calls.
+
 
 =head2 rewards
 

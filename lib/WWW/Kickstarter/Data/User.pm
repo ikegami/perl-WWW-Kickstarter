@@ -101,6 +101,8 @@ Returns the location of the user as an L<WWW::Kickstarter::Data::Location> objec
 
 Refetches this user from Kickstarter.
 
+This ensures the data is up to date, and it will populate fields that may not be provided by objects created by some API calls.
+
 
 =head2 projects_created
 
