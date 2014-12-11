@@ -1,6 +1,7 @@
 
 package WWW::Kickstarter;
 
+use 5.006;
 use strict;
 use warnings;
 no autovivification;
@@ -578,7 +579,7 @@ Version 1.7.0
 =head1 DESCRIPTION
 
 This distribution provides access to Kickstarter's private API
-to obtain information about your account, other users and and projects.
+to obtain information about your account, other users and projects.
 
 
 =head1 CONSTRUCTOR
@@ -1045,7 +1046,7 @@ It accepts the same options as L<C<projects>|/projects>.
 When an API call encounters an error, it throws a L<WWW::Kickstarter::Error> object as an exception.
 
 
-=head1 GARANTEE
+=head1 GUARANTEE
 
 Kickstarter has not provided a public API. As such,
 this distribution uses a private API to obtain information.
@@ -1103,6 +1104,9 @@ L<http://cpanratings.perl.org/d/WWW-Kickstarter>
 
 =back
 
+=head1 REPOSITORY
+
+L<https://github.com/ikegami/perl-WWW-Kickstarter>
 
 =head1 AUTHORS
 

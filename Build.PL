@@ -35,6 +35,7 @@ my $build = $class->new(
       'URI::Escape'           => 0,
       'URI::QueryParam'       => 0,
       'version'               => 0,
+      'perl'                  => '5.006',
 
       # Used by replaceable WWW::Kickstarter::HttpClient::Lwp
       'HTTP::Headers'         => 0,

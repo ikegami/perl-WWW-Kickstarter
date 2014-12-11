@@ -1,27 +1,39 @@
-Revision history for WWW-Kickstarter
+Revision history for Perl module WWW::Kickstarter
 
-1.8.0   ~~~~-~~-~~
-        - ~~~
+1.8.0   2014-12-?? IKEGAMI
+        - Specified min perl version to be 5.006, in main module and metadata
+        - Made Build.PL non-executable, as recommended by Kwalitee/CPANTS
+        - Added link to github repo to doc
+        - Tidied up formatting of Changes
+        - Fixed two typos in the doc
 
-1.6.0   2014-11-16
-        - $project->category_id is deprecated. Use $project->category->id instead.
-        - $project->category_name is deprecated. Use $project->category->name instead.
-        - Fixed bug in $ks->category_projects and $ks->category_projects_recommended.
+1.6.0   2014-11-17
+        - $project->category_id is deprecated.
+          Use $project->category->id instead.
+        - $project->category_name is deprecated.
+          Use $project->category->name instead.
+        - Fixed bug in $ks->category_projects and
+          $ks->category_projects_recommended.
         - Added $project->category.
         - Added support for reward data.
         - Added support for location data.
 
-1.4.0   2014-10-07
-        - Always round progress down to avoid saying a project is 100% funded before it is.
+1.4.0   2014-10-08
+        - Always round progress down to avoid saying a project
+          is 100% funded before it is.
         - $project->goal and $project->pledged aren't in USD as documented.
           Fixed the documentation and added $project->currency.
-        - Kickstarter's "launch_date" sort order changed. It now sorts by ascending launch date.
+        - Kickstarter's "launch_date" sort order changed.
+          It now sorts by ascending launch date.
           Use sort order "newest" to projects sorted by descending launch date.
-          $ks->projects_recently_launched was adjusted to return the newest first again.
+          $ks->projects_recently_launched was adjusted
+          to return the newest first again.
 
-1.2.0   2014-02-18
+1.2.0   2014-02-19
         - Urls to fetch projects were being built incorrectly.
 
-1.0.0   2014-02-15
+1.0.0   2014-02-16
         - Initial version
-          Accounts for the backwards-incompatible changes to the API of December 2013.
+          Accounts for the backwards-incompatible changes
+          to the API of December 2013.
+
