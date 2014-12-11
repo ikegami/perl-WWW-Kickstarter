@@ -4,6 +4,7 @@ Revision history for Perl module WWW::Kickstarter
         - Specified min perl version to be 5.006, in main module and metadata
         - Made Build.PL non-executable, as recommended by Kwalitee/CPANTS
         - Tidied up formatting of Changes
+        - Fixed two typos in the doc
 
 1.6.0   2014-11-17
         - $project->category_id is deprecated.
