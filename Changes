@@ -1,6 +1,7 @@
 Revision history for Perl module WWW::Kickstarter
 
 1.8.0   2014-12-?? IKEGAMI
+        - Made Build.PL non-executable, as recommended by Kwalitee/CPANTS
         - Tidied up formatting of Changes
 
 1.6.0   2014-11-17
