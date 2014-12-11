@@ -1104,6 +1104,9 @@ L<http://cpanratings.perl.org/d/WWW-Kickstarter>
 
 =back
 
+=head1 REPOSITORY
+
+L<https://github.com/ikegami/perl-WWW-Kickstarter>
 
 =head1 AUTHORS
 

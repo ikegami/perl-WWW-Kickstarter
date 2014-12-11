@@ -3,6 +3,7 @@ Revision history for Perl module WWW::Kickstarter
 1.8.0   2014-12-?? IKEGAMI
         - Specified min perl version to be 5.006, in main module and metadata
         - Made Build.PL non-executable, as recommended by Kwalitee/CPANTS
+        - Added link to github repo to doc
         - Tidied up formatting of Changes
         - Fixed two typos in the doc
 
