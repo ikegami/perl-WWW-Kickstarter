@@ -334,10 +334,10 @@ sub _projects {
 
    my %form;
    for my $field_name (
-      'category',           # Category's "id", "slug" or "name".
-      'location',           # Location's "id" (which is a "Where on Earth Identifier").
-      'sort',               # 'magic' (default), 'end_date', 'newest', 'launch_date', 'popularity', 'most_funded'
       'q',                  # Search terms
+      'category',           # Category's "id", "slug" or "name".
+      'tag',                # Tag's "id" or "slug".
+      'location',           # Location's "id" (which is a "Where on Earth Identifier").
       'backed_by_self',     # Boolean
       'starred_by_self',    # Boolean
       'backed_by_friends',  # Boolean
@@ -346,23 +346,21 @@ sub _projects {
       'pledged',            # 'all' (default), '0':<$10k, '1':$10k to $100k, '2':$100k to $1M, '3':>$1M
       'goal',               # 'all' (default), '0':<$10k, '1':$10k to $100k, '2':$100k to $1M, '3':>$1M
       'raised',             # 'all' (default), '0':<75%, '1':75% to 100%, '2':>100%
-      'tag',                # Tag's "id" or "slug".
+      'sort',               # 'magic' (default), 'end_date', 'newest', 'launch_date', 'popularity', 'most_funded'
    ) {
       $form{$field_name} = exists($fixed->{$field_name}) ? $fixed->{$field_name} : delete($opts{$field_name});
    }
 
-   $form{category} = ''      if !defined($form{category});
-   $form{location} = ''      if !defined($form{location});
-   $form{sort}     = 'magic' if !defined($form{sort})        || !length($form{sort});
    $form{q}        = ''      if !defined($form{q});
+   $form{category} = ''      if !defined($form{category});
+   $form{tag}      = ''      if !defined($form{tag});
+   $form{location} = ''      if !defined($form{location});
    $form{state}    = 'all'   if !defined($form{state})       || !length($form{state});
    $form{pledged}  = 'all'   if !defined($form{pledged})     || !length($form{pledged});
    $form{goal}     = 'all'   if !defined($form{goal})        || !length($form{goal});
    $form{raised}   = 'all'   if !defined($form{raised})      || !length($form{raised});
-   $form{tag}      = ''      if !defined($form{tag});
+   $form{sort}     = 'magic' if !defined($form{sort})        || !length($form{sort});
 
-   $form{sort} =~ /^(?:magic|end_date|newest|launch_date|popularity|most_funded)\z/
-      or my_croak(400, "Unrecognized value for sort. Valid: magic, end_date, newest, launch_date, popularity, most_funded");
    $form{state} =~ /^(?:all|live|successful)\z/
       or my_croak(400, "Unrecognized value for state. Valid: all, live, successful");
    $form{pledged} =~ /^(?:all|[0123])\z/
@@ -371,12 +369,14 @@ sub _projects {
       or my_croak(400, "Unrecognized value for goal. Valid: all, 0, 1, 2, 3");
    $form{raised} =~ /^(?:all|[012])\z/
       or my_croak(400, "Unrecognized value for raised. Valid: all, 0, 1, 2");
+   $form{sort} =~ /^(?:magic|end_date|newest|launch_date|popularity|most_funded)\z/
+      or my_croak(400, "Unrecognized value for sort. Valid: magic, end_date, newest, launch_date, popularity, most_funded");
 
    my $url = URI->new('discover', 'http');
-   $url->query_param_append( category_id => $form{category} ) if length($form{category});
-   $url->query_param_append( woe_id      => $form{location} ) if length($form{location});
-   $url->query_param_append( sort        => $form{sort}     ) if $form{sort} ne 'magic';
    $url->query_param_append( term        => $form{q}        ) if length($form{q});
+   $url->query_param_append( category_id => $form{category} ) if length($form{category});
+   $url->query_param_append( tag_id      => $form{tag}      ) if length($form{tag});
+   $url->query_param_append( woe_id      => $form{location} ) if length($form{location});
    $url->query_param_append( backed      => '1'             ) if $form{backed_by_self};
    $url->query_param_append( starred     => '1'             ) if $form{starred_by_self};
    $url->query_param_append( social      => '1'             ) if $form{backed_by_friends};
@@ -385,7 +385,7 @@ sub _projects {
    $url->query_param_append( pledged     => $form{pledged}  ) if $form{pledged} ne 'all';
    $url->query_param_append( goal        => $form{goal}     ) if $form{goal}    ne 'all';
    $url->query_param_append( raised      => $form{raised}   ) if $form{raised}  ne 'all';
-   $url->query_param_append( tag_id      => $form{tag}      ) if length($form{tag});
+   $url->query_param_append( sort        => $form{sort}     ) if $form{sort} ne 'magic';
 
    return $self->_call_api($url, [ 'iterator', cursor_style=>'page' ], 'Project', %opts);
 }
@@ -763,9 +763,9 @@ Options:
 
 =over
 
-=item * C<< page => $page_num >>
+=item * C<< q => $search_terms >>
 
-If provided, the pages of results before the specified page number are skipped.
+Limits the projects returned to those matching the string of search terms.
 
 =item * C<< category => $category_id >>
 
@@ -775,39 +775,85 @@ If provided, the pages of results before the specified page number are skipped.
 
 Limits the projects returned to those of the specified category (or one of its subcategories).
 
+=item * C<< tag => $tag_id >>
+
+=item * C<< tag => $tag_slug >>
+
+Limits the projects returned to those with the specified tag.
+
+I don't know of an API endpoint that returns a list of available tags. The following are the tags that exist at the time of this writing:
+
+=over
+
+=item * Bikes (id: 50, slug: bikes)
+
+=item * Burning Man (id: 34, slug: burning-man)
+
+=item * Cats (id: 31, slug: cats)
+
+=item * Civic (id: 3, slug: civic)
+
+=item * Cthulhu (id: 38, slug: cthulhu)
+
+=item * Fringe (id: 99, slug: fringe)
+
+=item * Library (id: 46, slug: library)
+
+=item * LOL (id: 105, slug: lol)
+
+=item * Maps (id: 48, slug: maps)
+
+=item * Movie Theater (id: 43, slug: movie-theater)
+
+=item * Museums (id: 63, slug: museums)
+
+=item * Open source (id: 20, slug: open-source)
+
+=item * Robots (id: 41, slug: robots)
+
+=item * Science (id: 19, slug: science)
+
+=item * Space is the Place (id: 107, slug: space-is-the-place)
+
+=item * World Maker Faire 2014 (id: 106, slug: world-maker-faire-2014)
+
+=back
+
+The following are also tags that are known to exist, but these aren't shown on the website. It's possible they aren't actively used anymore.
+
+=over
+
+=item * Arctic (id: 39, slug: arctic)
+
+=item * Maker Faire (id: 87, slug: maker-faire)
+
+=item * RPG (id: 33, slug: rpg)
+
+=item * Space (id: 28, slug: space)
+
+=item * Sundance (id: 29, slug: sundance)
+
+=item * Zombies (id: 30, slug: zombies)
+
+=back
+
+The first list was obtained from L<Kickstarter's Advanced Discover page|https://www.kickstarter.com/discover/advanced>. The second list was obtained through trial and error.
+
 =item * C<< location => $woe_id >>
 
 Limits the projects returned to those associated with the specified location.
 
-=item * C<< sort => 'magic' >> (default)
-
-=item * C<< sort => 'end_date' >>
-
-=item * C<< sort => 'newest' >>
-
-=item * C<< sort => 'launch_date' >>
-
-=item * C<< sort => 'popularity' >>
-
-=item * C<< sort => 'most_funded' >>
-
-Controls the order in which the projects are returned.
-
-=item * C<< q => $search_terms >>
-
-Limits the projects returned to those matching the string of search terms.
-
 =item * C<< backed_by_self => 1 >>
 
-Limits the projects returned to those the logged-in user backed.
+Limits the projects returned to those backed by the logged-in user.
 
 =item * C<< starred_by_self => 1 >>
 
-Limits the projects returned to those the logged-in user starred.
+Limits the projects returned to those starred by the logged-in user.
 
 =item * C<< backed_by_friends => 1 >>
 
-Limits the projects returned to those friends of the logged-in user backed.
+Limits the projects returned to those backed by friends of the logged-in user.
 
 =item * C<< picked_by_staff => 1 >>
 
@@ -873,69 +919,23 @@ Limits the projects returned to those to which the amount pledged falls within t
 
 The empty string and the string C<all> are accepted as equivalent to not providing the option at all.
 
-=item * C<< tag => $tag_id >>
+=item * C<< sort => 'magic' >> (default)
 
-=item * C<< tag => $tag_slug >>
+=item * C<< sort => 'end_date' >>
 
-Limits the projects returned to those with the specified tag.
+=item * C<< sort => 'newest' >>
 
-I don't know of an API endpoint that returns a list of available tags. The following are the tags that exist at the time of this writing:
+=item * C<< sort => 'launch_date' >>
 
-=over
+=item * C<< sort => 'popularity' >>
 
-=item * Bikes (id: 50, slug: bikes)
+=item * C<< sort => 'most_funded' >>
 
-=item * Burning Man (id: 34, slug: burning-man)
+Controls the order in which the projects are returned.
 
-=item * Cats (id: 31, slug: cats)
+=item * C<< page => $page_num >>
 
-=item * Civic (id: 3, slug: civic)
-
-=item * Cthulhu (id: 38, slug: cthulhu)
-
-=item * Fringe (id: 99, slug: fringe)
-
-=item * Library (id: 46, slug: library)
-
-=item * LOL (id: 105, slug: lol)
-
-=item * Maps (id: 48, slug: maps)
-
-=item * Movie Theater (id: 43, slug: movie-theater)
-
-=item * Museums (id: 63, slug: museums)
-
-=item * Open source (id: 20, slug: open-source)
-
-=item * Robots (id: 41, slug: robots)
-
-=item * Science (id: 19, slug: science)
-
-=item * Space is the Place (id: 107, slug: space-is-the-place)
-
-=item * World Maker Faire 2014 (id: 106, slug: world-maker-faire-2014)
-
-=back
-
-The following are also tags that are known to exist, but these aren't shown on the website. It's possible they aren't actively used anymore.
-
-=over
-
-=item * Arctic (id: 39, slug: arctic)
-
-=item * Maker Faire (id: 87, slug: maker-faire)
-
-=item * RPG (id: 33, slug: rpg)
-
-=item * Space (id: 28, slug: space)
-
-=item * Sundance (id: 29, slug: sundance)
-
-=item * Zombies (id: 30, slug: zombies)
-
-=back
-
-The first list was obtained from L<Kickstarter's Advanced Discover page|https://www.kickstarter.com/discover/advanced>. The second list was obtained through trial and error.
+If provided, the pages of results before the specified page number are skipped.
 
 =back
 
