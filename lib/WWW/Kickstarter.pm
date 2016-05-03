@@ -433,7 +433,7 @@ sub my_projects_backed {
 
 # There's no way to have 'discover?starred=1' return the results sorted by starring timestamp,
 # so we'll continue to use the original interface ('users/self/projects/starred').
-# But for consistency and possibly for foward-compatibility, we'll require a page-style cursor.
+# But for consistency and possibly for forward-compatibility, we'll require a page-style cursor.
 sub my_projects_starred {
    my ($self, %opts) = @_;
 
@@ -444,6 +444,7 @@ sub my_projects_starred {
    if (defined(my $page = delete($opts{page}))) {
       $opts{start} = ($page - 1) * 10;
    }
+
    return $self->_call_api('users/self/projects/starred', [ 'iterator', cursor_style=>'start' ], 'Project', %opts);
 }
 
@@ -578,7 +579,7 @@ Version 1.7.0
 =head1 DESCRIPTION
 
 This distribution provides access to Kickstarter's private API
-to obtain information about your account, other users and and projects.
+to obtain information about your account, other users and projects.
 
 
 =head1 CONSTRUCTOR
@@ -1045,7 +1046,7 @@ It accepts the same options as L<C<projects>|/projects>.
 When an API call encounters an error, it throws a L<WWW::Kickstarter::Error> object as an exception.
 
 
-=head1 GARANTEE
+=head1 GUARANTEE
 
 Kickstarter has not provided a public API. As such,
 this distribution uses a private API to obtain information.
