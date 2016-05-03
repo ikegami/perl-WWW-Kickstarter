@@ -251,7 +251,7 @@ If these rewards objects are not available, or if C<< force => 1 >> is specified
 the "full" reward objects will be fetched and returned.
 
 
-=head1 VERSION, BUGS, KNOWN ISSUES, SUPPORT, AUTHORS, COPYRIGHT & LICENSE
+=head1 VERSION, BUGS, KNOWN ISSUES, DOCUMENTATION, SUPPORT, AUTHOR, COPYRIGHT AND LICENSE
 
 See L<WWW::Kickstarter>
 

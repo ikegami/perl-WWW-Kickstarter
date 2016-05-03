@@ -94,7 +94,7 @@ can be instructed to use a different HTTP client, as long as it follows
 the interface documented in L<WWW::Kickstarter::HttpClient>.
 
 
-=head1 VERSION, BUGS, KNOWN ISSUES, SUPPORT, AUTHORS, COPYRIGHT & LICENSE
+=head1 VERSION, BUGS, KNOWN ISSUES, DOCUMENTATION, SUPPORT, AUTHOR, COPYRIGHT AND LICENSE
 
 See L<WWW::Kickstarter>
 

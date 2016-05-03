@@ -108,7 +108,7 @@ Notably, this object can't be refetched.
 Fetches and returns the project associated with this reward as a L<WWW::Kickstarter::Data::Project> object.
 
 
-=head1 VERSION, BUGS, KNOWN ISSUES, SUPPORT, AUTHORS, COPYRIGHT & LICENSE
+=head1 VERSION, BUGS, KNOWN ISSUES, DOCUMENTATION, SUPPORT, AUTHOR, COPYRIGHT AND LICENSE
 
 See L<WWW::Kickstarter>
 

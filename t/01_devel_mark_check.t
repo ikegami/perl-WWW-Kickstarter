@@ -1,9 +1,9 @@
 #!perl
 
+# Expected to be run from ../ (make test) or ../blib/ (make disttest)
+
 use strict;
 use warnings;
-
-use FindBin qw( $RealBin );
 
 use Test::More;
 
@@ -26,19 +26,17 @@ sub read_manifest {
       or die("Can't open \"MANIFEST\": $!\n");
 
    my @manifest = <$fh>;
-   chomp @manifest;
+   s/\s.*//s for @manifest;
    return @manifest;
 }
 
 {
-   chdir("$RealBin/..") or die $!;
-
    my @qfns = read_manifest();
 
    plan tests => 0+@qfns;
 
    for my $qfn (@qfns) {
       my $file = slurp_file($qfn);
-      ok( $file !~ /~\~~|&\&&/, "$qfn - Has no developer bookmarks" );
+      ok( $file !~ /~{3}|&{3}/, "$qfn - Has no developer bookmarks" );
    }
 }

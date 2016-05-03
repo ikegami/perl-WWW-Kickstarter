@@ -45,7 +45,7 @@ The provided JSON string is expected to be encoded using UTF-8.
 An error message string is thrown on error.
 
 
-=head1 VERSION, BUGS, KNOWN ISSUES, SUPPORT, AUTHORS, COPYRIGHT & LICENSE
+=head1 VERSION, BUGS, KNOWN ISSUES, DOCUMENTATION, SUPPORT, AUTHOR, COPYRIGHT AND LICENSE
 
 See L<WWW::Kickstarter>
 

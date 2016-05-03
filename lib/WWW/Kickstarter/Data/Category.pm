@@ -141,7 +141,7 @@ Returns an L<iterator|WWW::Kickstarter::Iterator> that fetches and returns the r
 It accepts the same options as L<WWW::Kickstarter's C<projects>|WWW::Kickstarter/projects>.
 
 
-=head1 VERSION, BUGS, KNOWN ISSUES, SUPPORT, AUTHORS, COPYRIGHT & LICENSE
+=head1 VERSION, BUGS, KNOWN ISSUES, DOCUMENTATION, SUPPORT, AUTHOR, COPYRIGHT AND LICENSE
 
 See L<WWW::Kickstarter>
 

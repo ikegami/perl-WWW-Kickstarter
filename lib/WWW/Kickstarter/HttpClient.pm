@@ -73,7 +73,7 @@ C<undef> can be returned for C<$content_type>, and it need not be lower-case.
 For example, C<$content_type> will be C<text/html> and C<$content_encoding> can be C<UTF-8> for C<< Text/HTML; charset=UTF-8 >>.
 
 
-=head1 VERSION, BUGS, KNOWN ISSUES, SUPPORT, AUTHORS, COPYRIGHT & LICENSE
+=head1 VERSION, BUGS, KNOWN ISSUES, DOCUMENTATION, SUPPORT, AUTHOR, COPYRIGHT AND LICENSE
 
 See L<WWW::Kickstarter>
 

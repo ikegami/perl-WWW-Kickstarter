@@ -1,3 +1,7 @@
+#!perl
+
+# Expected to be run from ../ (make test) or ../blib/ (make disttest)
+
 use strict;
 use warnings;
 
@@ -11,5 +15,3 @@ BEGIN {
 }
 
 all_pod_files_ok();
-
-1;

@@ -1,9 +1,9 @@
 #!perl
 
+# Expected to be run from ../ (make test) or ../blib/ (make disttest)
+
 use strict;
 use warnings;
-
-use FindBin qw( $RealBin );
 
 use Test::More;
 
@@ -25,8 +25,6 @@ sub slurp_file {
 }
 
 {
-   chdir("$RealBin/..") or die $!;
-
    my $base_file    = slurp_file('lib/WWW/Kickstarter.pm');
    my $changes_file = slurp_file('Changes');
 
@@ -39,7 +37,7 @@ sub slurp_file {
       or die("Can't find version in POD\n");
 
    my ($changes_version) = $changes_file =~ /^([0-9]\S*)/m
-      or die("Can't find version in POD\n");
+      or die("Can't find version in Changes file\n");
 
    is($pod_version, $version, "Version in POD matches actual version");
 

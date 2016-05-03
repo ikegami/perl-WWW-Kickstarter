@@ -1,9 +1,9 @@
 #!perl
 
+# Expected to be run from ../ (make test) or ../blib/ (make disttest)
+
 use strict;
 use warnings;
-
-use FindBin qw( $RealBin );
 
 use Test::More;
 
@@ -20,13 +20,11 @@ sub read_manifest {
       or die("Can't open \"MANIFEST\": $!\n");
 
    my @manifest = <$fh>;
-   chomp @manifest;
+   s/\s.*//s for @manifest;
    return @manifest;
 }
 
 {
-   chdir("$RealBin/..") or die $!;
-
    my @qfns = read_manifest();
 
    plan tests => 3*@qfns;
@@ -38,7 +36,7 @@ sub read_manifest {
       my $mode = $stat[2];
       is(sprintf("%04o", $mode & 0400), '0400', "$qfn is readable");
       is(sprintf("%04o", $mode & 0002), '0000', "$qfn isn't world writable");
-      if ($qfn =~ /\.(t|pl|PL)\z/) {
+      if ($qfn =~ /\.(?:t|pl|PL)\z/) {
          is(sprintf("%04o", $mode & 0100), '0100', "$qfn is executable");
       } else {
          is(sprintf("%04o", $mode & 0111), '0000', "$qfn isn't executable");

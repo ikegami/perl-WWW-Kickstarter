@@ -1,9 +1,9 @@
 #!perl
 
+# Expected to be run from ../ (make test) or ../blib/ (make disttest)
+
 use strict;
 use warnings;
-
-use FindBin qw( $RealBin );
 
 use Test::More;
 
@@ -26,13 +26,11 @@ sub read_manifest {
       or die("Can't open \"MANIFEST\": $!\n");
 
    my @manifest = <$fh>;
-   chomp @manifest;
+   s/\s.*//s for @manifest;
    return @manifest;
 }
 
 {
-   chdir("$RealBin/..") or die $!;
-
    my @qfns = read_manifest();
 
    plan tests => 2*@qfns;

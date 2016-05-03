@@ -1,8 +1,10 @@
 Revision history for WWW-Kickstarter
 
 1.8.0   ~~~~-~~-~~
-        - The ability for $ks->projects to search by search term was accidentally
-          left undocumented.
+        - Documented the ability for $ks->projects to search by search term,
+          which was previously left undocumented by accident.
+        - Switched the installer from using Module::Build to using ExtUtils::MakeMaker.
+        - Various minor documentation tweaks.
 
 1.6.0   2014-11-16
         - $project->category_id is deprecated. Use $project->category->id instead.

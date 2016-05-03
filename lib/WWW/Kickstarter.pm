@@ -1164,43 +1164,64 @@ The following issues are known:
 Feel free to bug me (C<< <ikegami@adaelis.com> >>) to work on these, or to submit a patch to the bug tracker.
 
 
-=head1 SUPPORT
+=head1 DOCUMENTATION AND SUPPORT
 
 You can find documentation for this module with the perldoc command.
 
    perldoc WWW::Kickstarter
 
-You can also look for information at:
+You can also find it online at these locations:
 
 =over
 
-=item * Search CPAN
+=item * L<http://search.cpan.org/dist/WWW-Kickstarter>
 
-L<http://search.cpan.org/dist/WWW-Kickstarter>
+=item * L<https://metacpan.org/release/WWW-Kickstarter>
 
-=item * RT: CPAN's request tracker
+=back
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=WWW-Kickstarter>
+If you need help, the following are great resources:
 
-=item * AnnoCPAN: Annotated CPAN documentation
+=over
 
-L<http://annocpan.org/dist/WWW-Kickstarter>
+=item * L<https://stackoverflow.com/|StackOverflow>
 
-=item * CPAN Ratings
+=item * L<http://www.perlmonks.org/|PerlMonks>
 
-L<http://cpanratings.perl.org/d/WWW-Kickstarter>
+=item * You may also contact the author directly.
+
+=back
+
+Bugs and improvements can be reported using either of the following systems:
+
+=over
+
+=item Using CPAN's request tracker at L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=WWW-Kickstarter>
+
+=item Using GitHub's issue tracker at L<https://github.com/ikegami/perl-WWW-Kickstarter/issues>
 
 =back
 
 
-=head1 AUTHORS
+=head1 REPOSITORY
 
-Eric Brine, C<< <ikegami@adaelis.com> >>
+=over
+
+=item * Web: L<https://github.com/ikegami/perl-WWW-Kickstarter>
+
+=item * git: L<https://github.com/ikegami/perl-WWW-Kickstarter.git>
+
+=back
+
+
+=head1 AUTHOR
+
+Eric Brine C<< <ikegami@adaelis.com> >>
 
 Initial release assisted by Mark Olson's "Kickscraper" project for Ruby.
 
 
-=head1 COPYRIGHT & LICENSE
+=head1 COPYRIGHT AND LICENSE
 
 No rights reserved.
 

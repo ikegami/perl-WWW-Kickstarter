@@ -8,27 +8,29 @@ INSTALLATION
 
 To install this module, run the following commands:
 
-    perl Build.PL
-    ./Build
-    ./Build test
-    ./Build install
+   perl Makefile.PL
+   make
+   make test
+   make install
 
 
 DEPENDENCIES
 
 This module requires these other modules and libraries:
 
-    Module::Build    (For installation only)
-    FindBin          (For testing only)
-    Test::More       (For testing only)
+    ExtUtils::MakeMaker 6.52    (For installation only)
+    Software::License::CC0_1_0  (For installation only)
+    Test::More                  (For testing only)
     autovivification
     Carp
     overload
+    strict
     Time::HiRes
     URI
     URI::Escape
     URI::QueryParam
     version
+    warnings
 
     The default HTTP client requires the following:
         HTTP::Headers
@@ -40,26 +42,18 @@ This module requires these other modules and libraries:
         JSON::XS
 
 
-SUPPORT AND DOCUMENTATION
+DOCUMENTATION
 
 After installing, you can find documentation for this module with the
 perldoc command.
 
     perldoc WWW::Kickstarter
 
-You can also look for information at:
+You can also find it online at these locations:
 
-    RT, CPAN's request tracker
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=WWW-Kickstarter
+    http://search.cpan.org/dist/WWW-Kickstarter
 
-    AnnoCPAN, Annotated CPAN documentation
-        http://annocpan.org/dist/WWW-Kickstarter
-
-    CPAN Ratings
-        http://cpanratings.perl.org/d/WWW-Kickstarter
-
-    Search CPAN
-        http://search.cpan.org/dist/WWW-Kickstarter
+    https://metacpan.org/release/WWW-Kickstarter
 
 
 COPYRIGHT AND LICENCE

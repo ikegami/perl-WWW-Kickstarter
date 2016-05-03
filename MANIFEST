@@ -1,5 +1,4 @@
 .gitignore
-Build.PL
 Changes
 lib/WWW/Kickstarter.pm
 lib/WWW/Kickstarter/Data.pm
@@ -18,10 +17,9 @@ lib/WWW/Kickstarter/Iterator.pm
 lib/WWW/Kickstarter/JsonParser.pm
 lib/WWW/Kickstarter/JsonParser/JsonXs.pm
 LICENSE.txt
+Makefile.PL
 MANIFEST
 MANIFEST.SKIP
-META.json
-META.yml
 README.txt
 t/00_load.t
 t/01_devel_mark_check.t

@@ -154,7 +154,7 @@ It accepts the same options as L<<WWW::Kickstarter's C<projects>|WWW::Kickstarte
 Fetches and returns the project associated with this reward as a L<WWW::Kickstarter::Data::Project> object.
 
 
-=head1 VERSION, BUGS, KNOWN ISSUES, SUPPORT, AUTHORS, COPYRIGHT & LICENSE
+=head1 VERSION, BUGS, KNOWN ISSUES, DOCUMENTATION, SUPPORT, AUTHOR, COPYRIGHT AND LICENSE
 
 See L<WWW::Kickstarter>
 
