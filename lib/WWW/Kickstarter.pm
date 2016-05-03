@@ -793,6 +793,10 @@ Limits the projects returned to those associated with the specified location.
 
 Controls the order in which the projects are returned.
 
+=item * C<< q => $search_terms >>
+
+Limits the projects returned to those matching the string of search terms.
+
 =item * C<< backed_by_self => 1 >>
 
 Limits the projects returned to those the logged-in user backed.
