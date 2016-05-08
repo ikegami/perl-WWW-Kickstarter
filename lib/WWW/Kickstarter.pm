@@ -5,7 +5,7 @@ use strict;
 use warnings;
 no autovivification;
 
-use version; our $VERSION = qv('v1.7.0');
+use version; our $VERSION = qv('v1.8.0');
 
 
 use Time::HiRes                              qw( );
@@ -557,7 +557,7 @@ WWW::Kickstarter - Retrieve information from Kickstarter
 
 =head1 VERSION
 
-Version 1.7.0
+Version 1.8.0
 
 
 =head1 SYNOPSIS

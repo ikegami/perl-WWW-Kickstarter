@@ -1,6 +1,6 @@
 Revision history for WWW-Kickstarter
 
-1.8.0   ~~~~-~~-~~
+1.8.0   2016-05-08
         - Documented the ability for $ks->projects to search by search term,
           which was previously left undocumented by accident.
         - Switched the installer from using Module::Build to using ExtUtils::MakeMaker.
