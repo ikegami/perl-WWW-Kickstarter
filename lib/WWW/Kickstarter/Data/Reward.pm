@@ -68,7 +68,7 @@ Returns the numerical id of the reward. The special id C<0> refers to the specia
 Returns the numerical id of the project associated with this reward. This returns C<undef> for the special "No Reward" reward (id C<0>).
 
 
-=head2 desc
+=head2 text
 
    my $reward_text = $reward->text;
 
