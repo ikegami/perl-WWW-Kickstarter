@@ -1143,11 +1143,7 @@ This has already happened, and may happen again. I cannot
 guarantee the continuing operation of this distribution.
 
 
-=head1 BUGS AND KNOWN ISSUES
-
-Please report any bugs or feature requests to C<bug-WWW-Kickstarter at rt.cpan.org>,
-or through the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=WWW-Kickstarter>.
-I will be notified, and then you'll automatically be notified of progress on your bug as I make changes.
+=head1 KNOWN ISSUES
 
 The following issues are known:
 
@@ -1161,7 +1157,7 @@ The following issues are known:
 
 =back
 
-Feel free to bug me (C<< <ikegami@adaelis.com> >>) to work on these, or to submit a patch to the bug tracker.
+Feel free to bug me (C<< <ikegami@adaelis.com> >>) to work on these, or to submit a patch to one of the bug trackers listed below.
 
 
 =head1 DOCUMENTATION AND SUPPORT
@@ -1192,9 +1188,11 @@ If you need help, the following are great resources:
 
 =back
 
-Bugs and improvements can be reported using either of the following systems:
+Bugs and improvements can be reported using any of the following systems:
 
 =over
+
+=item Using CPAN's request tracker by emailing C<bug-WWW-Kickstarter at rt.cpan.org>
 
 =item Using CPAN's request tracker at L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=WWW-Kickstarter>
 
