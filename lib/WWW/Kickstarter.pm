@@ -571,7 +571,7 @@ Version 1.9.0
    my $myself = $ks->login($email, $password);
 
    my $iter = $ks->projects_ending_soon();
-   while (my ($project) = $iter->()) {
+   while (my ($project) = $iter->get()) {
       print($project->name, "\n");
    }
 
