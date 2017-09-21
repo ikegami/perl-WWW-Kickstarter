@@ -783,7 +783,6 @@ Limits the projects returned to those with the specified tag.
 
 The list of tags available changes often. I don't know of an API endpoint that returns a list of available tags, but you can find some of them on L<Kickstarter's Advanced Discover page|https://www.kickstarter.com/discover/advanced>. See L<WWW::Kickstarter::Data::Tags> for the list of tags known to exist at the time of this writing.
 
-
 =item * C<< location => $woe_id >>
 
 Limits the projects returned to those associated with the specified location.
