@@ -1017,7 +1017,7 @@ The following issues are known:
 
 =back
 
-Feel free to bug me (C<< <ikegami@adaelis.com> >>) to work on these, or to submit a patch to one of the bug trackers listed below.
+Feel free to bug the L<author|/AUTHOR> to work on these, or to submit a patch to one of the bug trackers listed below.
 
 
 =head1 DOCUMENTATION AND SUPPORT
@@ -1040,11 +1040,11 @@ If you need help, the following are great resources:
 
 =over
 
-=item * L<https://stackoverflow.com/|StackOverflow>
+=item * L<Stack Overflow|https://stackoverflow.com/>
 
-=item * L<http://www.perlmonks.org/|PerlMonks>
+=item * L<PerlMonks|http://www.perlmonks.org/>
 
-=item * You may also contact the author directly.
+=item * You may also contact the L<author|/AUTHOR> directly.
 
 =back
 
