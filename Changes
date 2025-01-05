@@ -1,6 +1,7 @@
 Revision history for WWW-Kickstarter
 
 1.16.0  ~~~~-~~-~~
+        - Corrected the version of ExtUtils::MakeMaker that's required.
         - ~~~
 
 1.14.0  2018-10-31
